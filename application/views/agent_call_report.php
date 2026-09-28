@@ -63,6 +63,8 @@ foreach($total as $cds) {
 
             <!-- Team Wise Tables Loop Start -->
             <?php 
+			echo "<pre>";
+			print_r($team_groups);
             foreach($team_groups as $team_id => $agents): 
                 // Agar user Manager hai, toh sirf apni team ka table dikhaye, baaki skip karde
                 if($logged_user_role == 'Manager' && $team_id != $logged_user_team) {
