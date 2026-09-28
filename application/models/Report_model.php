@@ -303,7 +303,7 @@ public function total_call_optimised_old($sd = '', $ed = '', $agent = null)
 }
 
 
-        public function total_call_optimised($sd,$ed,$agent=null)
+        public function total_call_optimised_sanjay($sd,$ed,$agent=null)
         {
             $currentDate = new DateTime();
             $curd = $currentDate->format('Y-m-d');
@@ -350,12 +350,65 @@ public function total_call_optimised_old($sd = '', $ed = '', $agent = null)
             if(!empty($agent)){$this->db->where('user_name IN (SELECT name FROM users WHERE team = '.$this->db->escape($agent).' AND status = 1)', NULL, FALSE);}
 
             $this->db->group_by(['user_name', 'sender_phone_number']);
-            // $this->db->order_by('user_name', 'ASC');
+           
             $this->db->order_by('total_connected_calls', 'DESC');
             $this->db->order_by('total_call_duration', 'DESC');
             $query = $this->db->get();
             return $query->result_array();
         }
+
+		public function total_call_optimised($sd, $ed, $agent = null)
+{
+    $currentDate = new DateTime();
+    $curd = $currentDate->format('Y-m-d');
+    
+    if(!empty($sd)){
+        $sd = $sd . ' 00:00:00.000000';
+    } else {
+        $sd = $curd . ' 00:00:00.000000';
+    }
+    
+    if(!empty($ed)){
+        $ed = $ed . ' 23:59:59.000000';
+    } else {
+        $ed = $curd . ' 23:59:59.000000';
+    }
+
+    $this->db->select("
+        user_name,         
+        sender_phone_number,         
+        COUNT(*) AS total_calls,         
+        SUM(CASE WHEN call_type = 'OUTGOING' THEN 1 ELSE 0 END) AS total_outbound_calls,         
+        SUM(CASE WHEN call_type = 'INCOMING' THEN 1 ELSE 0 END) AS total_inbound_calls,         
+        COUNT(DISTINCT receiver_phone_number) AS total_unique_calls,         
+        SUM(CASE WHEN call_status IN ('incoming (answered)', 'outgoing (connected)') THEN 1 ELSE 0 END) AS total_connected_calls,         
+        SUM(CASE WHEN call_status = 'outgoing (connected)' THEN 1 ELSE 0 END) AS total_outbound_connected_calls,         
+        SUM(CASE WHEN call_status = 'incoming (answered)' THEN 1 ELSE 0 END) AS total_inbound_connected_calls,         
+        SUM(CASE WHEN call_type = 'REJECTED' THEN 1 ELSE 0 END) AS total_rejected_calls,         
+        SUM(CASE WHEN call_type = 'MISSED' THEN 1 ELSE 0 END) AS total_missed_calls,         
+        SUM(CASE WHEN call_type = 'OUTGOING' and call_status = 'Not Connected' THEN 1 ELSE 0 END) AS total_not_picked_client_calls,         
+        SUM(CASE WHEN duration IS NOT NULL AND duration <> '' THEN duration ELSE 0 END) AS total_call_duration,
+        (SELECT team FROM users WHERE users.name = highrise_app_call_logs_vcall.user_name LIMIT 1) AS team,
+        (SELECT user_role FROM users WHERE users.name = highrise_app_call_logs_vcall.user_name LIMIT 1) AS user_role
+    ", FALSE);
+
+    $this->db->from('highrise_app_call_logs_vcall');
+
+    $this->db->where('application_type', 'VCall');
+    $this->db.where('call_date >=', $sd);
+    $this->db.where('call_date <=', $ed);
+    
+    if(!empty($agent)){
+        $this->db->where('user_name IN (SELECT name FROM users WHERE team = '.$this->db->escape($agent).' AND status = 1)', NULL, FALSE);
+    }
+
+    $this->db->group_by(['user_name', 'sender_phone_number']);
+    $this->db->order_by('total_connected_calls', 'DESC');
+    $this->db->order_by('total_call_duration', 'DESC');
+    
+    $query = $this->db->get();
+    return $query->result_array();
+}
 
  public function daily_performance_report($sd = '', $ed = '', $agent = null)
  {
