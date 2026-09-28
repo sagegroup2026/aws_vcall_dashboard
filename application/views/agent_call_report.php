@@ -1,7 +1,7 @@
 <?php
 $sess_name = $this->session->userdata("name");
 
-// Logged-in user ki team aur role find karenge $total array se
+// Logged-in user ki team aur role find karenge
 $logged_user_team = '';
 $logged_user_role = '';
 foreach($total as $row) {
@@ -12,19 +12,21 @@ foreach($total as $row) {
     }
 }
 
-// Data ko team-wise group kar lenge aur sath hi us team ka manager name bhi dhoond lenge
+// 1. Call logs se team-wise data group kar lenge
 $team_groups = [];
-$team_managers = [];
-
 foreach($total as $cds) {
     $t_id = $cds['team'];
     $team_groups[$t_id][] = $cds;
-    
-    // Agar is row me user ka role Manager hai, toh is team ka manager set kar do
-    if(isset($cds['user_role']) && strtolower($cds['user_role']) == 'manager') {
-        $team_managers[$t_id] = $cds['user_name'];
+}
+
+// 2. Ensure karenge ki agar kisi manager ki team me call nahi hui, tab bhi wo team list me aaye
+$all_managers = isset($managers) ? $managers : [];
+foreach($all_managers as $t_id => $m_name) {
+    if(!isset($team_groups[$t_id])) {
+        $team_groups[$t_id] = []; 
     }
 }
+ksort($team_groups);
 ?>
 
 <style>
@@ -92,8 +94,7 @@ foreach($total as $cds) {
                     continue; 
                 }
 
-                // Team ka manager name nikalenge
-                $manager_name = isset($team_managers[$team_id]) ? $team_managers[$team_id] : 'N/A';
+                $manager_name = isset($all_managers[$team_id]) ? $all_managers[$team_id] : 'N/A';
             ?>
                 <div class="row">
                     <div class="col-lg-12">
@@ -128,8 +129,9 @@ foreach($total as $cds) {
                                         </thead>
                                         <tbody>
                                            <?php
-                                            $x = 1;
-                                            foreach($agents as $cds){
+                                            if(!empty($agents)) {
+                                                $x = 1;
+                                                foreach($agents as $cds){
                                            ?>
                                             <tr class="<?php if($x <= 3){echo 'top-performer';} ?>">
                                                 <td class="fw-medium"><?php echo $x; $x++; ?></td>
@@ -165,7 +167,12 @@ foreach($total as $cds) {
                                                     ?>
                                                 </td>
                                             </tr>
-                                           <?php } ?>
+                                           <?php 
+                                                }
+                                            } else {
+                                                echo '<tr><td colspan="12" class="text-center text-muted">No calls recorded for this team today.</td></tr>';
+                                            }
+                                           ?>
                                         </tbody>
                                     </table>
                                 </div>
