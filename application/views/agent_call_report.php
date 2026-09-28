@@ -210,6 +210,7 @@ $ued = htmlspecialchars($_GET['ed']);
 											$x = 1;
 											$t = count($total);
 											$ts = $t - 3;
+											echo "<pre>";
 											print_r($total);
 											foreach($total as $cds){
 										   ?>
