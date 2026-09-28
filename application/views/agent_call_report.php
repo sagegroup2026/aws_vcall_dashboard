@@ -5,20 +5,39 @@ $sess_name = $this->session->userdata("name");
 $logged_user_team = '';
 $logged_user_role = '';
 foreach($total as $row) {
-    if($row['user_name'] == $sess_name) {
+    if(isset($row['user_name']) && $row['user_name'] == $sess_name) {
         $logged_user_team = $row['team'];
         $logged_user_role = $row['user_role'];
         break;
     }
 }
 
-// Data ko team-wise group kar lenge
+// Data ko team-wise group kar lenge aur sath hi us team ka manager name bhi dhoond lenge
 $team_groups = [];
+$team_managers = [];
+
 foreach($total as $cds) {
     $t_id = $cds['team'];
     $team_groups[$t_id][] = $cds;
+    
+    // Agar is row me user ka role Manager hai, toh is team ka manager set kar do
+    if(isset($cds['user_role']) && strtolower($cds['user_role']) == 'manager') {
+        $team_managers[$t_id] = $cds['user_name'];
+    }
 }
 ?>
+
+<style>
+    th, td{text-align: center;vertical-align: middle;}
+    .la{text-align: left !important;}
+    .top-performer {
+        background-color: #d4edda; /* green */
+        font-weight: bold;
+    }
+    .low-performer {
+        background-color: #f8d7da; /* red */
+    }
+</style>
 
 <!-- ============================================================== -->
 <!-- Start right Content here -->
@@ -31,6 +50,7 @@ foreach($total as $cds) {
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                         <h4 class="mb-sm-0"><?php echo $hd; ?></h4>
+
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="dashboard<?php echo '?' . $_SERVER['QUERY_STRING']; ?>">Dashboard</a></li>
@@ -42,7 +62,6 @@ foreach($total as $cds) {
             </div>
             <!-- end page title -->
 
-            <!-- Welcoming / Greeting Section -->
             <div class="row mb-3 pb-1">
                 <div class="col-12">
                     <div class="d-flex align-items-lg-center flex-lg-row flex-column">
@@ -50,9 +69,13 @@ foreach($total as $cds) {
                             <h4 class="fs-16 mb-1">
                                 <?php 
                                 date_default_timezone_set("Asia/Kolkata");
-                                if (date("a") == 'am') { echo 'Good Morning'; } 
-                                elseif (date("h") >= '00' && date("h") <= '04') { echo 'Good Afternoon'; } 
-                                else { echo 'Good Evening'; } 
+                                if (date("a") == 'am') {
+                                    echo 'Good Morning';
+                                } elseif (date("h") >= '00' && date("h") <= '04') {
+                                    echo 'Good Afternoon';
+                                } else {
+                                    echo 'Good Evening';
+                                } 
                                 ?>, <?php echo $sess_name; ?>!
                             </h4>
                             <p class="text-muted mb-0">Here's what your teams have done today.</p>
@@ -69,14 +92,8 @@ foreach($total as $cds) {
                     continue; 
                 }
 
-                // Is team ka Manager name dhoondne ke liye logic
-                $manager_name = 'N/A';
-                foreach($agents as $ag) {
-                    if(isset($ag['user_role']) && strtolower($ag['user_role']) == 'manager') {
-                        $manager_name = $ag['user_name'];
-                        break;
-                    }
-                }
+                // Team ka manager name nikalenge
+                $manager_name = isset($team_managers[$team_id]) ? $team_managers[$team_id] : 'N/A';
             ?>
                 <div class="row">
                     <div class="col-lg-12">
@@ -88,7 +105,7 @@ foreach($total as $cds) {
                                 <span class="text-muted font-size-12">
                                     <?php echo $shd . ' (Data Updated On - ' . date("d M'y, H:i:s", $timestamp) . ')'; ?>
                                 </span>
-                            </div>
+                            </div><!-- end card header -->
 
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -152,9 +169,9 @@ foreach($total as $cds) {
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
+                            </div><!-- end card-body -->
+                        </div><!-- end card -->
+                    </div><!-- end col -->
                 </div>
             <?php endforeach; ?>
             <!-- Team Wise Tables Loop End -->

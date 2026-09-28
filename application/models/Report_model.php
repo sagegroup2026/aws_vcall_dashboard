@@ -403,6 +403,20 @@ public function total_call_optimised($sd, $ed, $agent = null)
     return $query->result_array();
 }
 
+public function get_team_managers()
+{
+    $this->db->select('team, name');
+    $this->db->from('users');
+    $this->db->where('user_role', 'Manager');
+    $this->db->where('status', 1);
+    $query = $this->db->get();
+    
+    $managers = [];
+    foreach($query->result_array() as $row){
+        $managers[$row['team']] = $row['name'];
+    }
+    return $managers;
+}
  public function daily_performance_report($sd = '', $ed = '', $agent = null)
  {
     $currentDate = new DateTime();
