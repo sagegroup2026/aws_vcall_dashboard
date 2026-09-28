@@ -63,6 +63,7 @@ class Rpt extends CI_Controller {
         $data['ed'] = $ed;
 
         $team_id = $this->Report_model->get_manager_team($agent);
+		$data['managers'] = $this->Report_model->get_team_managers();
         $report = $this->Report_model->total_call_optimised($sd, $ed, $team_id);
         $total = count($report);
 
