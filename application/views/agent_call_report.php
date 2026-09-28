@@ -210,7 +210,7 @@ $ued = htmlspecialchars($_GET['ed']);
 											$x = 1;
 											$t = count($total);
 											$ts = $t - 3;
-
+											print_r($total);
 											foreach($total as $cds){
 										   ?>
                                                                                         <tr class="gridjs-tr <?php if($x <= 3){echo 'top-performer';} ?>"> <!--elseif($x > $ts){echo 'low-performer';} ?>">-->
