@@ -74,7 +74,7 @@ foreach($total as $cds) {
                         <div class="card mb-4">
                             <div class="card-header bg-light">
                                 <h4 class="card-title mb-0">
-                                    <?php echo "Team " . $team_id . " Report &mdash; " . $shd . ' (Data Updated On - ' . date("d M'y, H:i:s", $timestamp) . ')'; ?>
+                                    <?php echo "Team " . $team_id.$user_name . " Report &mdash; " . $shd . ' (Data Updated On - ' . date("d M'y, H:i:s", $timestamp) . ')'; ?>
                                 </h4>
                             </div>
 
