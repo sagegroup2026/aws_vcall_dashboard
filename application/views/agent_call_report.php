@@ -1,7 +1,7 @@
 <?php
 $sess_name = $this->session->userdata("name");
 
-// Logged-in user ki team aur role find karenge $total array se agar session me nahi hai
+// Logged-in user ki team aur role find karenge $total array se
 $logged_user_team = '';
 $logged_user_role = '';
 foreach($total as $row) {
@@ -63,21 +63,31 @@ foreach($total as $cds) {
 
             <!-- Team Wise Tables Loop Start -->
             <?php 
-			echo "<pre>";
-			print_r($team_groups);
             foreach($team_groups as $team_id => $agents): 
                 // Agar user Manager hai, toh sirf apni team ka table dikhaye, baaki skip karde
                 if($logged_user_role == 'Manager' && $team_id != $logged_user_team) {
                     continue; 
                 }
+
+                // Is team ka Manager name dhoondne ke liye logic
+                $manager_name = 'N/A';
+                foreach($agents as $ag) {
+                    if(isset($ag['user_role']) && strtolower($ag['user_role']) == 'manager') {
+                        $manager_name = $ag['user_name'];
+                        break;
+                    }
+                }
             ?>
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card mb-4">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h4 class="card-title mb-0">
-                                    <?php echo "Team " . $team_id.$user_name . " Report &mdash; " . $shd . ' (Data Updated On - ' . date("d M'y, H:i:s", $timestamp) . ')'; ?>
+                                    <?php echo "Team " . $team_id . " Report &mdash; Manager: <span class='text-primary'>" . $manager_name . "</span>"; ?>
                                 </h4>
+                                <span class="text-muted font-size-12">
+                                    <?php echo $shd . ' (Data Updated On - ' . date("d M'y, H:i:s", $timestamp) . ')'; ?>
+                                </span>
                             </div>
 
                             <div class="card-body">
