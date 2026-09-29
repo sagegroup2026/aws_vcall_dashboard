@@ -39,6 +39,13 @@ ksort($team_groups);
     .low-performer {
         background-color: #f8d7da; /* red */
     }
+    /* Sorting ke liye pointer cursor */
+    th.sortable {
+        cursor: pointer;
+    }
+    th.sortable:hover {
+        background-color: #343a40;
+    }
 </style>
 
 <!-- ============================================================== -->
@@ -96,7 +103,7 @@ ksort($team_groups);
                 }
 
                 $manager_name = isset($all_managers[$team_id]) ? $all_managers[$team_id] : 'N/A';
-                $table_id = "sortingTable_" . $table_counter;
+                $table_id = "sortableTable_" . $table_counter;
             ?>
                 <div class="row">
                     <div class="col-lg-12">
@@ -112,22 +119,21 @@ ksort($team_groups);
 
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <!-- Table me id add kar di hai sorting ke liye -->
                                     <table id="<?php echo $table_id; ?>" role="grid" class="table table-striped table-nowrap align-middle mb-0">
                                         <thead class="table-dark" style="top: 0; position: sticky; z-index: 10;">
                                             <tr>
                                                 <th style="width:90px;">Sr. No.</th>
-                                                <th style="width:250px;">DGM / Agent Details</th>
-                                                <th>Total<br>Calls</th>
-                                                <th>Outbound<br>Calls</th>
-                                                <th>Inbound<br>Calls</th>
-                                                <th>Unique<br>Calls</th>
-                                                <th>Connected<br>Calls</th>
-                                                <th>Rejected<br>Calls</th>
-                                                <th>Missed<br>Calls</th>
-                                                <th>Calls Not Picked<br>By Clients</th>
-                                                <th>Total<br>Call Duration</th>
-                                                <th>Average<br>Call Duration</th>
+                                                <th class="sortable" style="width:250px;" onclick="sortTable(this, 1)">DGM / Agent Details ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 2)">Total<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 3)">Outbound<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 4)">Inbound<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 5)">Unique<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 6)">Connected<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 7)">Rejected<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 8)">Missed<br>Calls ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 9)">Calls Not Picked<br>By Clients ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 10)">Total<br>Call Duration ↕</th>
+                                                <th class="sortable" onclick="sortTable(this, 11)">Average<br>Call Duration ↕</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -153,7 +159,7 @@ ksort($team_groups);
                                                         $h = floor($d / 3600); 
                                                         $m = floor(($d - ($h * 3600)) / 60); 
                                                         $rs = $d % 60; 
-                                                        echo sprintf('%02d:%02d:%02d', $h, $m, $rs); 
+                        echo sprintf('%02d:%02d:%02d', $h, $m, $rs); 
                                                     ?>
                                                 </td>
                                                 <td>
@@ -193,25 +199,39 @@ ksort($team_groups);
     </div>
 </div>
 
-<link rel="stylesheet" href="assets/libs/gridjs/theme/mermaid.min.css">
-<!-- GridJS JavaScript file add kiya hai sorting ke liye -->
-<script src="assets/libs/gridjs/gridjs.umd.js"></script>
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Jitne bhi tables loop me bane hain, un sab par Grid.js sorting apply kar rahe hain
-        for (let i = 1; i < <?php echo $table_counter; ?>; i++) {
-            let tableElement = document.getElementById("sortingTable_" + i);
-            if (tableElement) {
-                new gridjs.Grid({
-                    from: tableElement,
-                    sort: true, // Sorting enable karne ke liye
-                    pagination: false // Agar pagination chahiye toh true kar sakte hain
-                }).render(tableElement.parentNode);
-                
-                // Purane table element ko hata dete hain kyunki gridjs apna naya render banata hai
-                tableElement.style.display = 'none';
-            }
-        }
+function sortTable(thElement, colIndex) {
+    let table = thElement.closest('table');
+    let tbody = table.querySelector('tbody');
+    let rows = Array.from(tbody.querySelectorAll('tr'));
+    
+    // Agar "No calls recorded" message hai toh sort mat karo
+    if (rows.length === 1 && rows[0].querySelector('td').getAttribute('colspan')) {
+        return;
+    }
+
+    let asc = thElement.getAttribute('data-order') !== 'asc';
+    
+    // Sabhi headers se arrows reset kar do
+    table.querySelectorAll('th').forEach(th => th.removeAttribute('data-order'));
+    thElement.setAttribute('data-order', asc ? 'asc' : 'desc');
+
+    rows.sort((rowA, rowB) => {
+        let cellA = rowA.querySelectorAll('td')[colIndex].innerText.trim();
+        let cellB = rowB.querySelectorAll('td')[colIndex].innerText.trim();
+
+        let valA = isNaN(cellA) ? cellA : parseFloat(cellA);
+        let valB = isNaN(cellB) ? cellB : parseFloat(cellB);
+
+        if (valA > valB) return asc ? 1 : -1;
+        if (valA < valB) return asc ? -1 : 1;
+        return 0;
     });
+
+    // Rows ko dobara append karo table me aur Sr. No. update karo
+    rows.forEach((row, index) => {
+        row.querySelectorAll('td')[0].innerText = index + 1;
+        tbody.appendChild(row);
+    });
+}
 </script>
