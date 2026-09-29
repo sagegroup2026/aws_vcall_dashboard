@@ -519,56 +519,38 @@ public function get_team_managers()
 
 
 		public function get_never_logged_in_agents($sd = '', $ed = '', $team_id = null)
-			{
-				$currentDate = new DateTime();
-				$curd = $currentDate->format('Y-m-d');
+    {
+        $currentDate = new DateTime();
+        $curd = $currentDate->format('Y-m-d');
 
-				$sd = !empty($sd) ? $sd . ' 00:00:00.000000' : $curd . ' 00:00:00.000000';
-				$ed = !empty($ed) ? $ed . ' 23:59:59.000000' : $curd . ' 23:59:59.000000';
+        $sd = !empty($sd) ? $sd . ' 00:00:00.000000' : $curd . ' 00:00:00.000000';
+        $ed = !empty($ed) ? $ed . ' 23:59:59.000000' : $curd . ' 23:59:59.000000';
 
-				$this->db->select("
-					u.name AS user_name,
-					u.team AS team,
-					u.mobile AS sender_phone_number,
-					COUNT(c.id) AS total_calls,
-					SUM(CASE WHEN c.call_type = 'OUTGOING' THEN 1 ELSE 0 END) AS total_outbound_calls,
-					SUM(CASE WHEN c.call_type = 'INCOMING' THEN 1 ELSE 0 END) AS total_inbound_calls,
-					COUNT(DISTINCT c.receiver_phone_number) AS total_unique_calls,
-					SUM(CASE WHEN c.call_status IN ('incoming (answered)', 'outgoing (connected)') THEN 1 ELSE 0 END) AS total_connected_calls,
-					SUM(CASE WHEN c.call_status = 'REJECTED' THEN 1 ELSE 0 END) AS total_rejected_calls,
-					SUM(CASE WHEN c.call_status = 'MISSED' THEN 1 ELSE 0 END) AS total_missed_calls,
-					SUM(CASE WHEN c.call_type = 'OUTGOING' AND c.call_status = 'Not Connected' THEN 1 ELSE 0 END) AS total_not_picked_client_calls,
-					SUM(CASE WHEN c.duration IS NOT NULL AND c.duration <> '' THEN c.duration ELSE 0 END) AS total_call_duration
-				", FALSE);
+        $this->db->select("            u.name AS user_name,            u.team AS team,            u.mobile AS sender_phone_number,            COUNT(c.id) AS total_calls,            SUM(CASE WHEN c.call_type = 'OUTGOING' THEN 1 ELSE 0 END) AS total_outbound_calls,            SUM(CASE WHEN c.call_type = 'INCOMING' THEN 1 ELSE 0 END) AS total_inbound_calls,            COUNT(DISTINCT c.receiver_phone_number) AS total_unique_calls,            SUM(CASE WHEN c.call_status IN ('incoming (answered)', 'outgoing (connected)') THEN 1 ELSE 0 END) AS total_connected_calls,            SUM(CASE WHEN c.call_status = 'REJECTED' THEN 1 ELSE 0 END) AS total_rejected_calls,            SUM(CASE WHEN c.call_status = 'MISSED' THEN 1 ELSE 0 END) AS total_missed_calls,            SUM(CASE WHEN c.call_type = 'OUTGOING' AND c.call_status = 'Not Connected' THEN 1 ELSE 0 END) AS total_not_picked_client_calls,            SUM(CASE WHEN c.duration IS NOT NULL AND c.duration <> '' THEN c.duration ELSE 0 END) AS total_call_duration        ", FALSE);
 
-				$this->db->from('users u');
+        $this->db->from('users u');
 
-				$join = "
-					u.name = c.user_name
-					AND c.application_type = 'VCall'
-					AND c.call_date >= ".$this->db->escape($sd)."
-					AND c.call_date <= ".$this->db->escape($ed);
+        $join = "            u.name = c.user_name            AND c.application_type = 'VCall'            AND c.call_date >= ".$this->db->escape($sd)."            AND c.call_date <= ".$this->db->escape($ed);
 
-				$this->db->join('highrise_app_call_logs_vcall c', $join, 'left');
+        $this->db->join('highrise_app_call_logs_vcall c', $join, 'left');
 
-				// Active users only, exclude Admin
-				$this->db->where('u.status', 1);
-				$this->db->where('u.user_role !=', 'Admin');
+        // Active users only (Admin restriction removed so managers can appear)
+        $this->db->where('u.status', 1);
 
-				// Team filter if provided
-				if (!empty($team_id)) {
-					$this->db->where('u.team', $team_id);
-				}
+        // Team filter if provided
+        if (!empty($team_id)) {
+            $this->db->where('u.team', $team_id);
+        }
 
-				$this->db->group_by('u.id');
+        $this->db->group_by('u.id');
     
-				// Yahan main condition hai: Jin agents ke total calls 0 hain (Yaani koi kaam nahi kiya)
-				$this->db->having('COUNT(c.id)', 0);
+        // Jin users ke total calls 0 hain
+        $this->db->having('COUNT(c.id)', 0);
 
-				$this->db->order_by('u.name', 'ASC');
+        $this->db->order_by('u.name', 'ASC');
 
-				return $this->db->get()->result_array();
-			}
+        return $this->db->get()->result_array();
+    }
 
 /****End*****/
     }?>
