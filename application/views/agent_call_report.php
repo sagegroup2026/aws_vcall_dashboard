@@ -88,7 +88,7 @@ ksort($team_groups);
 
             <!-- Team Wise Tables Loop Start -->
             <?php 
-			
+            $table_counter = 1;
             foreach($team_groups as $team_id => $agents): 
                 // Agar user Manager hai, toh sirf apni team ka table dikhaye, baaki skip karde
                 if($logged_user_role == 'Manager' && $team_id != $logged_user_team) {
@@ -96,6 +96,7 @@ ksort($team_groups);
                 }
 
                 $manager_name = isset($all_managers[$team_id]) ? $all_managers[$team_id] : 'N/A';
+                $table_id = "sortingTable_" . $table_counter;
             ?>
                 <div class="row">
                     <div class="col-lg-12">
@@ -111,7 +112,8 @@ ksort($team_groups);
 
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table role="grid" class="table table-striped table-nowrap align-middle mb-0">
+                                    <!-- Table me id add kar di hai sorting ke liye -->
+                                    <table id="<?php echo $table_id; ?>" role="grid" class="table table-striped table-nowrap align-middle mb-0">
                                         <thead class="table-dark" style="top: 0; position: sticky; z-index: 10;">
                                             <tr>
                                                 <th style="width:90px;">Sr. No.</th>
@@ -134,7 +136,7 @@ ksort($team_groups);
                                                 $x = 1;
                                                 foreach($agents as $cds){
                                            ?>
-                                            <tr class="<?php if($x <= 3){echo 'top-performer';} ?>">
+                                           <tr class="<?php if($x <= 3){echo 'top-performer';} ?>">
                                                 <td class="fw-medium"><?php echo $x; $x++; ?></td>
                                                 <td><?php echo "<a href='total-calls?agent=" . $cds['user_name'] . "&sd=" . $usd . "&ed=" . $ued . "' target='_blank'>" . $cds['user_name'] . "</a><br>" . $cds['sender_phone_number']; ?></td>
                                                 <td><?php echo $cds['total_calls']; ?></td>
@@ -181,7 +183,10 @@ ksort($team_groups);
                         </div><!-- end card -->
                     </div><!-- end col -->
                 </div>
-            <?php endforeach; ?>
+            <?php 
+                $table_counter++;
+                endforeach; 
+            ?>
             <!-- Team Wise Tables Loop End -->
 
         </div><!-- container-fluid -->
@@ -189,3 +194,24 @@ ksort($team_groups);
 </div>
 
 <link rel="stylesheet" href="assets/libs/gridjs/theme/mermaid.min.css">
+<!-- GridJS JavaScript file add kiya hai sorting ke liye -->
+<script src="assets/libs/gridjs/gridjs.umd.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Jitne bhi tables loop me bane hain, un sab par Grid.js sorting apply kar rahe hain
+        for (let i = 1; i < <?php echo $table_counter; ?>; i++) {
+            let tableElement = document.getElementById("sortingTable_" + i);
+            if (tableElement) {
+                new gridjs.Grid({
+                    from: tableElement,
+                    sort: true, // Sorting enable karne ke liye
+                    pagination: false // Agar pagination chahiye toh true kar sakte hain
+                }).render(tableElement.parentNode);
+                
+                // Purane table element ko hata dete hain kyunki gridjs apna naya render banata hai
+                tableElement.style.display = 'none';
+            }
+        }
+    });
+</script>
