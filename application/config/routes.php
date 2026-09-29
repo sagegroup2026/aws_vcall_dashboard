@@ -68,6 +68,7 @@ $route['inbound-calls'] = 'VCall/inbound';
 
 // Reports
 $route['agent-call-report'] = 'Rpt/agent_call_report';
+$route['never-logged-in-report'] = 'Rpt/never_logged_in_report';
 $route['team-call-report'] = 'Rpt/team_call_report';
 $route['agent-productivity'] = 'VCall/aprod';
 $route['daily-performance-report'] = 'Rpt/daily_performance_report';

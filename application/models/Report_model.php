@@ -417,104 +417,158 @@ public function get_team_managers()
     }
     return $managers;
 }
- public function daily_performance_report($sd = '', $ed = '', $agent = null)
- {
-    $currentDate = new DateTime();
-    $curd = $currentDate->format('Y-m-d');
+		 public function daily_performance_report($sd = '', $ed = '', $agent = null)
+		 {
+			$currentDate = new DateTime();
+			$curd = $currentDate->format('Y-m-d');
 
-    $sd = !empty($sd) ? $sd . ' 00:00:00.000000' : $curd . ' 00:00:00.000000';
-    $ed = !empty($ed) ? $ed . ' 23:59:59.000000' : $curd . ' 23:59:59.000000';
+			$sd = !empty($sd) ? $sd . ' 00:00:00.000000' : $curd . ' 00:00:00.000000';
+			$ed = !empty($ed) ? $ed . ' 23:59:59.000000' : $curd . ' 23:59:59.000000';
 
-    $this->db->select("
-        u.name AS user_name,
+			$this->db->select("
+				u.name AS user_name,
 
-        COUNT(c.id) AS total_calls,
+				COUNT(c.id) AS total_calls,
 
-        SUM(CASE WHEN c.call_type = 'OUTGOING' THEN 1 ELSE 0 END) AS total_outbound_calls,
+				SUM(CASE WHEN c.call_type = 'OUTGOING' THEN 1 ELSE 0 END) AS total_outbound_calls,
 
-        SUM(CASE WHEN c.call_type = 'INCOMING' THEN 1 ELSE 0 END) AS total_inbound_calls,
+				SUM(CASE WHEN c.call_type = 'INCOMING' THEN 1 ELSE 0 END) AS total_inbound_calls,
 
-        COUNT(DISTINCT c.receiver_phone_number) AS total_unique_calls,
+				COUNT(DISTINCT c.receiver_phone_number) AS total_unique_calls,
 
-        SUM(CASE
-                WHEN c.call_status IN ('incoming (answered)', 'outgoing (connected)')
-                THEN 1
-                ELSE 0
-            END) AS total_connected_calls,
+				SUM(CASE
+						WHEN c.call_status IN ('incoming (answered)', 'outgoing (connected)')
+						THEN 1
+						ELSE 0
+					END) AS total_connected_calls,
 
-        SUM(CASE
-                WHEN c.call_status = 'outgoing (connected)'
-                THEN 1
-                ELSE 0
-            END) AS total_outbound_connected_calls,
+				SUM(CASE
+						WHEN c.call_status = 'outgoing (connected)'
+						THEN 1
+						ELSE 0
+					END) AS total_outbound_connected_calls,
 
-        SUM(CASE
-                WHEN c.call_status = 'incoming (answered)'
-                THEN 1
-                ELSE 0
-            END) AS total_inbound_connected_calls,
+				SUM(CASE
+						WHEN c.call_status = 'incoming (answered)'
+						THEN 1
+						ELSE 0
+					END) AS total_inbound_connected_calls,
 
-        SUM(CASE
-                WHEN c.call_status = 'REJECTED'
-                THEN 1
-                ELSE 0
-            END) AS total_rejected_calls,
+				SUM(CASE
+						WHEN c.call_status = 'REJECTED'
+						THEN 1
+						ELSE 0
+					END) AS total_rejected_calls,
 
-        SUM(CASE
-                WHEN c.call_status = 'MISSED'
-                THEN 1
-                ELSE 0
-            END) AS total_missed_calls,
+				SUM(CASE
+						WHEN c.call_status = 'MISSED'
+						THEN 1
+						ELSE 0
+					END) AS total_missed_calls,
 
-        SUM(CASE
-                WHEN c.call_type = 'OUTGOING'
-                 AND c.call_status = 'Not Connected'
-                THEN 1
-                ELSE 0
-            END) AS total_not_picked_client_calls,
+				SUM(CASE
+						WHEN c.call_type = 'OUTGOING'
+						 AND c.call_status = 'Not Connected'
+						THEN 1
+						ELSE 0
+					END) AS total_not_picked_client_calls,
 
-        SUM(
-            CASE
-                WHEN c.duration IS NOT NULL
-                 AND c.duration <> ''
-                THEN c.duration
-                ELSE 0
-            END
-        ) AS total_call_duration
-    ", FALSE);
+				SUM(
+					CASE
+						WHEN c.duration IS NOT NULL
+						 AND c.duration <> ''
+						THEN c.duration
+						ELSE 0
+					END
+				) AS total_call_duration
+			", FALSE);
 
-    $this->db->from('users u');
+			$this->db->from('users u');
 
-    $join = "
-        u.name = c.user_name
-        AND c.application_type = 'VCall'
-        AND c.call_date >= ".$this->db->escape($sd)."
-        AND c.call_date <= ".$this->db->escape($ed);
+			$join = "
+				u.name = c.user_name
+				AND c.application_type = 'VCall'
+				AND c.call_date >= ".$this->db->escape($sd)."
+				AND c.call_date <= ".$this->db->escape($ed);
 
-    $this->db->join(
-        'highrise_app_call_logs_vcall c',
-        $join,
-        'left'
-    );
+			$this->db->join(
+				'highrise_app_call_logs_vcall c',
+				$join,
+				'left'
+			);
 
-    // Active users only
-    $this->db->where('u.status', 1);
+			// Active users only
+			$this->db->where('u.status', 1);
 
-    // Team filter
-    if (!empty($agent)) {
-        $this->db->where('u.team', $agent);
-    }
+			// Team filter
+			if (!empty($agent)) {
+				$this->db->where('u.team', $agent);
+			}
 
-    // Optional: Only agents
-    // $this->db->where('u.role', 'Agent');
+			// Optional: Only agents
+			// $this->db->where('u.role', 'Agent');
 
-    $this->db->group_by('u.id');
+			$this->db->group_by('u.id');
 
-    $this->db->order_by('total_connected_calls', 'DESC');
-    $this->db->order_by('total_call_duration', 'DESC');
-    $this->db->order_by('u.name', 'ASC');
+			$this->db->order_by('total_connected_calls', 'DESC');
+			$this->db->order_by('total_call_duration', 'DESC');
+			$this->db->order_by('u.name', 'ASC');
 
-    return $this->db->get()->result_array();
+			return $this->db->get()->result_array();
         }
 
+
+		public function get_never_logged_in_agents($sd = '', $ed = '', $team_id = null)
+			{
+				$currentDate = new DateTime();
+				$curd = $currentDate->format('Y-m-d');
+
+				$sd = !empty($sd) ? $sd . ' 00:00:00.000000' : $curd . ' 00:00:00.000000';
+				$ed = !empty($ed) ? $ed . ' 23:59:59.000000' : $curd . ' 23:59:59.000000';
+
+				$this->db->select("
+					u.name AS user_name,
+					u.team AS team,
+					u.mobile AS sender_phone_number,
+					COUNT(c.id) AS total_calls,
+					SUM(CASE WHEN c.call_type = 'OUTGOING' THEN 1 ELSE 0 END) AS total_outbound_calls,
+					SUM(CASE WHEN c.call_type = 'INCOMING' THEN 1 ELSE 0 END) AS total_inbound_calls,
+					COUNT(DISTINCT c.receiver_phone_number) AS total_unique_calls,
+					SUM(CASE WHEN c.call_status IN ('incoming (answered)', 'outgoing (connected)') THEN 1 ELSE 0 END) AS total_connected_calls,
+					SUM(CASE WHEN c.call_status = 'REJECTED' THEN 1 ELSE 0 END) AS total_rejected_calls,
+					SUM(CASE WHEN c.call_status = 'MISSED' THEN 1 ELSE 0 END) AS total_missed_calls,
+					SUM(CASE WHEN c.call_type = 'OUTGOING' AND c.call_status = 'Not Connected' THEN 1 ELSE 0 END) AS total_not_picked_client_calls,
+					SUM(CASE WHEN c.duration IS NOT NULL AND c.duration <> '' THEN c.duration ELSE 0 END) AS total_call_duration
+				", FALSE);
+
+				$this->db->from('users u');
+
+				$join = "
+					u.name = c.user_name
+					AND c.application_type = 'VCall'
+					AND c.call_date >= ".$this->db->escape($sd)."
+					AND c.call_date <= ".$this->db->escape($ed);
+
+				$this->db->join('highrise_app_call_logs_vcall c', $join, 'left');
+
+				// Active users only, exclude Admin
+				$this->db->where('u.status', 1);
+				$this->db->where('u.user_role !=', 'Admin');
+
+				// Team filter if provided
+				if (!empty($team_id)) {
+					$this->db->where('u.team', $team_id);
+				}
+
+				$this->db->group_by('u.id');
+    
+				// Yahan main condition hai: Jin agents ke total calls 0 hain (Yaani koi kaam nahi kiya)
+				$this->db->having('COUNT(c.id)', 0);
+
+				$this->db->order_by('u.name', 'ASC');
+
+				return $this->db->get()->result_array();
+			}
+
+/****End*****/
     }?>

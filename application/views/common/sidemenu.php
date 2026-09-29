@@ -110,6 +110,9 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                                  <li class="nav-item">
                                     <a href="agent-call-report<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">Agent Call Report</a>
                                  </li>
+								 <li class="nav-item">
+                                    <a href="never-logged-in-report<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">Never Logged In Report</a>
+                                 </li>
                                  <li class="nav-item">
                                     <a href="agent-productivity" class="nav-link" data-key="t-auto">Agent Productivity Report</a>
                                  </li>

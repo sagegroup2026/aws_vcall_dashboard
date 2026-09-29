@@ -95,6 +95,41 @@ class Rpt extends CI_Controller {
         $this->load->view('common/footer');
     }
 
+	public function never_logged_in_report(){
+		  $agent = $this->input->get('agent');
+			$sd = $this->input->get('sd');
+			$ed = $this->input->get('ed');
+
+			$data['sd'] = $sd;
+			$data['ed'] = $ed;
+			$data['hd'] = "Never Logged In / Zero Activity Report";
+			$data['shd'] = "Agents with no calls today";
+
+			$team_id = !empty($agent) ? $this->Report_model->get_manager_team($agent) : null;
+    
+			// Logged-in user ki team session se nikalne ke liye
+			$sess_name = $this->session->userdata("name");
+    
+			$data['managers'] = $this->Report_model->get_team_managers();
+    
+			// Naya Model method call kiya jo 0 calls wale agents laayega
+			$report = $this->Report_model->get_never_logged_in_agents($sd, $ed, null);
+
+			// Total array me logged user role aur team ensure karne ke liye saare users pass kiye
+			$data['total'] = $report; 
+    
+			// Agar aapko session find karne ke liye saare users ki zaroorat ho toh yahan saara data merge kar sakte hain
+			// Par agar session check keval $total par dependent hai, toh hum users table se bhi data le sakte hain. 
+			// Neeche wale code me hum role find karne ke liye saare users ka array bhej rahe hain:
+			$this->db->select('name as user_name, team, user_role');
+			$data['total'] = array_merge($report, $this->db->get('users')->result_array());
+
+			$this->load->view('common/head', $data);
+			$this->load->view('common/menu');
+			$this->load->view('common/sidemenu');
+			$this->load->view('never_logged_in_report', $data); // Naya ya purana view file
+			$this->load->view('common/footer');
+	}
     public function daily_performance_report()
     {
         $agent = $this->input->get('agent');
