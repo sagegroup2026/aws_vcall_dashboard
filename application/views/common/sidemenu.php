@@ -30,8 +30,22 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                   </a>
                   <div class="collapse menu-dropdown" id="sidebarAnlytics">
                      <ul class="nav nav-sm flex-column">
-                        <li class="nav-item">
+                        <!--<li class="nav-item">
                            <a href="teams" class="nav-link">Teams</a>
+                        </li>-->
+						<li class="nav-item">
+                           <a href="sidebarAgentReport" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarEmail" data-key="t-rpt">Teams</a>
+                           <div class="collapse menu-dropdown" id="sidebarAgentReport">
+                              <ul class="nav nav-sm flex-column">
+                                 <li class="nav-item">
+                                    <a href="teams" class="nav-link" data-key="t-auto">All Teams</a>
+                                 </li>
+								 <li class="nav-item">
+                                    <a href="teamsList" class="nav-link" data-key="t-auto">Teams</a>
+                                 </li>
+                                 
+                              </ul>
+                           </div>
                         </li>
                         <li class="nav-item">
                            <a href="#" class="nav-link">Agents</a>
