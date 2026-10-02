@@ -27,7 +27,7 @@
     const startSecInput = document.getElementById('startSecond');
     const endSecInput = document.getElementById('endSecond');
     
-    if(selectedValue === ''){selectedValue.value = 'Select Agent';}else{dropdown.value = selectedValue;}
+    if(selectedValue === '' || selectedValue === null){dropdown.value = 'Select Agent';}else{dropdown.value = selectedValue;}
     
     if(selectedSs) { startSecInput.value = selectedSs; }
     if(selectedEs) { endSecInput.value = selectedEs; }
@@ -69,47 +69,50 @@
                            <form action="javascript:void(0);">
                               <div class="row g-3 mb-0 align-items-center">
                                  <div class="col-sm-auto">
-                                    <div class="input-group">
+                                    <div class="d-flex align-items-center flex-wrap gap-2">
 
-                                       <!-- NEW: Start Second (ss) Input (Placed before Pick An Agent) -->
+                                       <!-- Start Second (ss) Input -->
                                        <div>
-                                          <label for="startSecond" class="form-label">Start Second</label>
-                                          <input type="number" id="startSecond" class="form-control border-0 dash-filter-picker shadow" placeholder="e.g. 0" onchange="myFunction()" value="<?php echo $uss; ?>">
+                                          <label for="startSecond" class="form-label">Start Sec</label>
+                                          <input type="number" id="startSecond" class="form-control border-0 dash-filter-picker shadow" placeholder="Start Sec" onchange="myFunction()" value="<?php echo $uss; ?>" style="width: 110px;">
                                        </div>
-                                       <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
 
-                                       <!-- NEW: End Second (es) Input -->
+                                       <!-- End Second (es) Input -->
                                        <div>
-                                          <label for="endSecond" class="form-label">End Second</label>
-                                          <input type="number" id="endSecond" class="form-control border-0 dash-filter-picker shadow" placeholder="e.g. 60" onchange="myFunction()" value="<?php echo $ues; ?>">
+                                          <label for="endSecond" class="form-label">End Sec</label>
+                                          <input type="number" id="endSecond" class="form-control border-0 dash-filter-picker shadow" placeholder="End Sec" onchange="myFunction()" value="<?php echo $ues; ?>" style="width: 110px;">
                                        </div>
-                                       <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
 
+                                       <!-- Pick An Agent -->
                                        <div>
                                           <label for="myagent" class="form-label">Pick An Agent</label>
                                           <select class="form-select border-0 dash-filter-picker shadow" id="myagent" aria-label="Default select example" onchange="myFunction()">
                                              <option selected>Select Agent</option>
                                              <?php if (is_array($agt) || is_object($agt)){foreach($agt as $agn){ ?>
-                                             <option value="<?php echo $agn['name']; ?>"><?php echo $agn['name']; ?></option>
+                                             <option value="<?php echo $agn['name']; ?>" <?php if($agent == $agn['name']){ echo 'selected'; } ?>><?php echo $agn['name']; ?></option>
                                              <?php }}else{echo '<p>No records found.</p>';} ?>
                                           </select>
                                        </div>
-                                       <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div> 
+
                                        <?php
                                           $currentDate = new DateTime();
                                           $curd = $currentDate->format('Y-m-d');
                                        ?>
+                                       <!-- Date From -->
                                        <div>
                                           <label for="from" class="form-label">Date From</label>
-                                          <input type="date" id="from" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" max="<?php echo $ued; ?>" value="<?php if(!empty($usd)){echo $usd;}else{echo $curd;} ?>" data-provider="flatpickr" data-range-date="true" data-date-format="d M, Y">
+                                          <input type="date" id="from" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php if(!empty($usd)){echo $usd;}else{echo $curd;} ?>">
                                        </div>
-                                       <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+                                       <!-- Date To -->
                                        <div>
                                           <label for="to" class="form-label">Date To</label>
-                                          <input type="date" id="to" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php if(!empty($ued)){echo $ued;}else{echo $curd;} ?>" data-provider="flatpickr" data-range-date="true" data-date-format="d M, Y">
+                                          <input type="date" id="to" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php if(!empty($ued)){echo $ued;}else{echo $curd;} ?>">
                                        </div>
+
                                     </div>
                                  </div>
+
                                  <script>
                                     function myFunction(){
                                        var ag = document.getElementById('myagent');
@@ -127,9 +130,9 @@
                                           return;
                                        }
 
-                                       // Second validation check: If one second field is filled, ensure the other is also filled before updating URL
+                                       // CRITICAL REQUIREMENT: Do NOT change URL unless BOTH startSecond and endSecond have values entered, OR both are empty.
+                                       // If one is filled and the other is empty, halt execution.
                                        if((ss.value !== '' && es.value === '') || (ss.value === '' && es.value !== '')) {
-                                          // Wait until both startSecond and endSecond are provided
                                           return;
                                        }
 
@@ -142,12 +145,15 @@
                                           }
                                        }
 
-                                       // Construct URL including agent, dates, and seconds parameters
+                                       // Build URL parameters dynamically
                                        var url = "dashboard?agent=" + encodeURIComponent(ag.value) + 
                                                  "&sd=" + encodeURIComponent(sd.value) + 
-                                                 "&ed=" + encodeURIComponent(ed.value) + 
-                                                 "&ss=" + encodeURIComponent(ss.value) + 
-                                                 "&es=" + encodeURIComponent(es.value);
+                                                 "&ed=" + encodeURIComponent(ed.value);
+
+                                       // Only append ss and es if both have values
+                                       if(ss.value !== '' && es.value !== '') {
+                                          url += "&ss=" + encodeURIComponent(ss.value) + "&es=" + encodeURIComponent(es.value);
+                                       }
                                        
                                        location.replace(url);
                                     }
@@ -163,165 +169,15 @@
                </div>
                <!--end row-->
 
-               <!-- Rest of your dashboard cards and charts continue below as normal -->
-               <!-- (All cards unchanged, continuing with your existing view links using $_SERVER['QUERY_STRING']) -->
-               
+               <!-- Rest of your dashboard widgets and cards -->
                <div class="row">
                   <div class="col-xxl-8">
                      <div class="card">
                         <div class="card-header border-0 align-items-center d-flex">
                            <h4 class="card-title mb-0 flex-grow-1">Projects Overview</h4>
-                           <div>
-                              <button type="button" class="btn btn-soft-secondary btn-sm shadow-none">ALL</button>
-                              <button type="button" class="btn btn-soft-secondary btn-sm shadow-none">1M</button>
-                              <button type="button" class="btn btn-soft-secondary btn-sm shadow-none">6M</button>
-                              <button type="button" class="btn btn-soft-primary btn-sm shadow-none">1Y</button>
-                           </div>
-                        </div><!-- end card header -->
-
-                        <div class="card-header p-0 border-0 bg-soft-light">
-                           <div class="row g-0 text-center">
-                              <div class="col-6 col-sm-3">
-                                 <div class="p-3 border border-dashed border-start-0">
-                                    <h5 class="mb-1"><span class="counter-value" data-target="9851">0</span></h5>
-                                    <p class="text-muted mb-0">Number of Projects</p>
-                                 </div>
-                              </div>
-                              <div class="col-6 col-sm-3">
-                                 <div class="p-3 border border-dashed border-start-0">
-                                    <h5 class="mb-1"><span class="counter-value" data-target="1026">0</span></h5>
-                                    <p class="text-muted mb-0">Active Projects</p>
-                                 </div>
-                              </div>
-                              <div class="col-6 col-sm-3">
-                                 <div class="p-3 border border-dashed border-start-0">
-                                    <h5 class="mb-1">$<span class="counter-value" data-target="228.89">0</span>k</h5>
-                                    <p class="text-muted mb-0">Revenue</p>
-                                 </div>
-                              </div>
-                              <div class="col-6 col-sm-3">
-                                 <div class="p-3 border border-dashed border-start-0 border-end-0">
-                                    <h5 class="mb-1 text-success"><span class="counter-value" data-target="10589">0</span>h</h5>
-                                    <p class="text-muted mb-0">Working Hours</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </div><!-- end card header -->
-                        
+                        </div>
                         <div class="card-body p-0 pb-2">
-                           <div>
-                              <div id="projects-overview-chart" data-colors='["--vz-primary", "--vz-warning", "--vz-success"]' class="apex-charts" dir="ltr"></div>
-                           </div>
-                        </div><!-- end card body -->
-                     </div><!-- end card -->
-                  </div><!-- end col -->
-
-                  <div class="col-xxl-4">
-                     <div class="card card-height-100">
-                        <div class="card-header align-items-center d-flex">
-                           <h4 class="card-title mb-0 flex-grow-1">Store Visits by Source</h4>
-                           <div class="flex-shrink-0">
-                              <div class="dropdown card-header-dropdown">
-                                 <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="text-muted">Report<i class="mdi mdi-chevron-down ms-1"></i></span>
-                                 </a>
-                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="#">Download Report</a>
-                                    <a class="dropdown-item" href="#">Export</a>
-                                    <a class="dropdown-item" href="#">Import</a>
-                                 </div>
-                              </div>
-                           </div>
-                        </div><!-- end card header -->
-
-                        <div class="card-body">
-                           <div id="store-visits-source" data-colors='["--vz-primary", "--vz-success", "--vz-warning", "--vz-danger", "--vz-info"]' class="apex-charts" dir="ltr"></div>
-                        </div>
-                     </div> <!-- .card-->
-                  </div>
-               </div>
-
-               <div class="row">
-                  <div class="col-xl-4 col-md-6">
-                     <div class="card card-animate">
-                        <div class="card-body">
-                           <div class="d-flex align-items-center">
-                              <div class="flex-grow-1 overflow-hidden">
-                                 <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Total Calls</p>
-                              </div>
-                              <div class="flex-shrink-0">
-                                 <h5 class="text-success fs-14 mb-0">
-                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
-                                 </h5>
-                              </div>
-                           </div>
-                           <div class="d-flex align-items-end justify-content-between mt-4">
-                              <div>
-                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<?php echo $calls; ?>">0</span></h4>
-                                 <a href="total-calls<?php echo '?' . $_SERVER['QUERY_STRING']; ?>" class="text-decoration-underline">View Details</a>
-                              </div>
-                              <div class="avatar-sm flex-shrink-0">
-                                 <span class="avatar-title bg-primary rounded fs-3">
-                                 <i class="mdi mdi-phone-in-talk-outline"></i>
-                                 </span>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div class="col-xl-4 col-md-6">
-                     <div class="card card-animate">
-                        <div class="card-body">
-                           <div class="d-flex align-items-center">
-                              <div class="flex-grow-1 overflow-hidden">
-                                 <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Outgoing Calls</p>
-                              </div>
-                              <div class="flex-shrink-0">
-                                 <h5 class="text-success fs-14 mb-0">
-                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
-                                 </h5>
-                              </div>
-                           </div>
-                           <div class="d-flex align-items-end justify-content-between mt-4">
-                              <div>
-                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<?php echo $out_calls; ?>">0</span></h4>
-                                 <a href="outbound-calls<?php echo '?' . $_SERVER['QUERY_STRING']; ?>" class="text-decoration-underline">View Details</a>
-                              </div>
-                              <div class="avatar-sm flex-shrink-0">
-                                 <span class="avatar-title bg-success rounded fs-3">
-                                 <i class="mdi mdi-phone-outgoing-outline"></i>
-                                 </span>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div class="col-xl-4 col-md-6">
-                     <div class="card card-animate">
-                        <div class="card-body">
-                           <div class="d-flex align-items-center">
-                              <div class="flex-grow-1 overflow-hidden">
-                                 <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Incoming Calls</p>
-                              </div>
-                              <div class="flex-shrink-0">
-                                 <h5 class="text-danger fs-14 mb-0">
-                                    <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
-                                 </h5>
-                              </div>
-                           </div>
-                           <div class="d-flex align-items-end justify-content-between mt-4">
-                              <div>
-                                 <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="<?php echo $in_calls; ?>">0</span></h4>
-                                 <a href="inbound-calls<?php echo '?' . $_SERVER['QUERY_STRING']; ?>" class="text-decoration-underline">View Details</a>
-                              </div>
-                              <div class="avatar-sm flex-shrink-0">
-                                 <span class="avatar-title bg-info rounded fs-3">
-                                 <i class="mdi mdi-phone-incoming-outline"></i>
-                                 </span>
-                              </div>
-                           </div>
+                           <div id="projects-overview-chart" class="apex-charts" dir="ltr"></div>
                         </div>
                      </div>
                   </div>
