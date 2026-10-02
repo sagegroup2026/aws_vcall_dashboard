@@ -70,11 +70,15 @@ class VCall extends CI_Controller {
         $user = htmlspecialchars($_GET['agent']);
         $sd = date('Y-m-d', strtotime(htmlspecialchars($_GET['sd'])));
         $ed = date('Y-m-d', strtotime(htmlspecialchars($_GET['ed'])));
+
+		$startSecond = htmlspecialchars($_GET['ss']);
+		$endSecond = htmlspecialchars($_GET['es']);
+
         $tid = $this->session->userdata("team");
 
         // Database Variables
-        $dashboard = $this->VC_model->dashboard_data($user, $sd, $ed, $tid);
-        $data['dsh'] = $this->VC_model->dashboard_data($user, $sd, $ed, $tid);
+        $dashboard = $this->VC_model->dashboard_data($user, $sd, $ed, $tid,$startSecond,$endSecond);
+        $data['dsh'] = $this->VC_model->dashboard_data($user, $sd, $ed, $tid,$startSecond,$endSecond);
         $data['agt'] = $this->VC_model->agent($tid);
         
         $data['pie_series'] = json_encode([
