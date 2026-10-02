@@ -84,3 +84,4 @@ $route['not-picked-by-client'] = 'VCall/not_pick_calls';
 
 
 $route['never-logged-in-report'] = 'Rpt/never_logged_in_report';
+$route['teamsList'] = 'VCall/teamsList';
