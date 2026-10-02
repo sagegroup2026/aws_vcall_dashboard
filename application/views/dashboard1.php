@@ -96,6 +96,7 @@
                                           <label for="to" class="form-label">Date To</label>
                                           <input type="date" id="to" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php if(!empty($ued)){echo $ued;}else{echo $curd;} ?>" data-provider="flatpickr" data-range-date="true" data-date-format="d M, Y">
                                        </div>
+									   <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div> 
 									   <!-- Start Second (ss) Input -->
                                        <div>
                                           <label for="startSecond" class="form-label">Start Sec</label>
@@ -103,6 +104,7 @@
                                        </div>
 
                                        <!-- End Second (es) Input -->
+									   <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div> 
                                        <div>
                                           <label for="endSecond" class="form-label">End Sec</label>
                                           <input type="number" id="endSecond" class="form-control border-0 dash-filter-picker shadow" placeholder="End Sec" onchange="myFunction()" value="<?php echo $ues; ?>" style="width: 110px;">
