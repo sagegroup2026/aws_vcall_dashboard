@@ -126,17 +126,9 @@
                                         <thead class="table-dark">
                                             <tr>
                                                 <th>Sr. No.</th>
-                                                <th>DGM / Agent Details</th>
-                                                <th>Total<br>Calls</th>
-                                                <th>Outbound<br>Calls</th>
-                                                <th>Inbound<br>Calls</th>
-                                                <th>Unique<br>Calls</th>
-                                                <th>Connected<br>Calls</th>
-                                                <th>Rejected<br>Calls</th>
-                                                <th>Missed<br>Calls</th>
-                                                <th>Calls Not Picked<br>By Clients</th>
-                                                <th>Total<br>Call Duration</th>
-                                                <th>Average<br>Call Duration</th>
+                                                <th>Team Name</th>
+                                                <th>Team Head Name</th>
+                                               
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -144,17 +136,10 @@
                                             <?php $x = 1; if(is_array($total) || is_object($total)){$t = count($total); $ts = $t - 3; foreach($total as $cd){ ?>
                                             <tr  class="<?php if($x <= 3){echo 'top-performer';}elseif($x > $ts){echo 'low-performer';} ?>">
                                                 <td class="fw-medium"><?php echo $x; $x++; ?></td>
-                                                <td><?php echo "<a href='total-calls?agent=" . $cd['user_name'] . "&sd=" . $usd . "&ed=" . $ued . "' target='_blank'>" . $cd['user_name'] . '</a><br>' . $cd['sender_phone_number']; ?></td>
-                                                <td><?php echo $cd['total_calls']; ?></td>
-                                                <td><?php echo $cd['total_outbound_calls']; ?></td>
-                                                <td><?php echo $cd['total_inbound_calls']; ?></td>
-                                                <td><?php echo $cd['total_unique_calls']; ?></td>
-                                                <td><?php echo $cd['total_connected_calls']; ?></td>
-                                                <td><?php echo $cd['total_rejected_calls']; ?></td>
-                                                <td><?php echo $cd['total_missed_calls']; ?></td>
-                                                <td><?php echo $cd['total_not_picked_client_calls']; ?></td>
-                                                <td><?php $d = $cd['total_call_duration']; $h = floor($d / 3600); $m = floor(($d - ($h * 3600)) / 60); $rs = $d % 60; $t = sprintf('%02d:%02d:%02d', $h, $m, $rs); echo $t; ?></td>
-                                                <td><?php if($cd['total_connected_calls'] != '0'){$d = $cd['total_call_duration'] / $cd['total_connected_calls']; $h = floor($d / 3600); $m = floor(($d - ($h * 3600)) / 60); $rs = $d % 60; $t = sprintf('%02d:%02d:%02d', $h, $m, $rs); echo $t;}else{echo '00:00:00';}?></td>
+                                                <td><?php echo $cd['tname']; ?></td>
+                                                <td><?php echo $cd['thead>']; ?></td>
+                                               
+                                                
                                             </tr>
                                             <?php }}else{echo '<p>No records found.</p>';} ?>
                                         </tbody>
