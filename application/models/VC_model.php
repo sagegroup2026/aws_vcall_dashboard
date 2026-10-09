@@ -265,16 +265,16 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
     // 🔹 Personal numbers wipeout condition (Global exclusion using NOT EXISTS)
     $where[] = "NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)";
 
-    // 🔹 User filter
+    // 🔹 User filter (Exact match for username like AshishT)
     if (!empty($user)) {
-        $where[] = "(cv.user_name LIKE '%$user%' OR REPLACE(cv.user_name, ' ', '') LIKE '%" . str_replace(' ', '', $user) . "%')";
+        $where[] = "cv.user_name = " . $this->db->escape($user);
     }
 
     if ($team > 0) {
         $where[] = "u.team = $team";
     }
 
-    // 🔹 Date filters (VERY IMPORTANT to escape)
+    // 🔹 Date filters
     if (!empty($from_date)) {
         $where[] = "cv.call_date >= $from_date";
     }
@@ -282,7 +282,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
         $where[] = "cv.call_date <= $to_date";
     }
 
-    // 🔹 New Duration Filter ($startSecond aur $endSecond ke liye)
+    // 🔹 Duration Filter
     if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
         $startSecond = (int)$startSecond;
         $endSecond = (int)$endSecond;
@@ -296,7 +296,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
     // Final WHERE string
     $where_sql = "WHERE " . implode(" AND ", $where);
 
-    // 🔥 MAIN QUERY (Agent + Total)
+    // 🔥 MAIN QUERY
     $sql = "        SELECT             
                 'TOTAL' AS user_name,             
                 NULL AS sender_phone_number,             
