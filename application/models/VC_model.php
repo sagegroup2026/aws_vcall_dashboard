@@ -318,7 +318,9 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
             $where_sql    ";
 
     $query = $this->db->query($sql);
-    return $query->result_array();
+    $query->result_array();
+	echo $this->db->last_query(); 
+    exit;
 }
 
 
