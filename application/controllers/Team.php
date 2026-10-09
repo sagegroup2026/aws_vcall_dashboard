@@ -9,7 +9,7 @@ class Team extends CI_Controller {
         $this->load->model('Team_model');
     }
 
-    public function index() {
+    public function teamsList() {
         $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         $url = ucwords(str_replace('-', ' ', isset($uri[2]) ? $uri[2] : 'Teams List'));
 
@@ -24,7 +24,7 @@ class Team extends CI_Controller {
         $this->load->view('common/head', $data);
         $this->load->view('common/menu');
         $this->load->view('common/sidemenu');
-        $this->load->view('teamsList', $data);
+        $this->load->view('teamsList', $data); 
         $this->load->view('common/footer');
     }
 
