@@ -66,9 +66,9 @@
 switch (ENVIRONMENT)
 {
 	case 'development':
-		error_reporting(0);
-		ini_set('display_errors', 0);
-	break;
+    error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+    处的ini_set('display_errors', 1);
+break;
 
 	case 'testing':
 	case 'production':
