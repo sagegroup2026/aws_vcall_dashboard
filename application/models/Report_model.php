@@ -453,7 +453,7 @@ public function total_call_optimised($sd, $ed, $agent = null)
     $this->db->order_by('total_connected_calls', 'DESC');
     $this->db->order_by('total_call_duration', 'DESC');
     
-    $query = $this->db$this->db->get();
+    $query = $this->db->get();
     return $query->result_array();
 }
 public function get_team_managers()
