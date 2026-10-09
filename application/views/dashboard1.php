@@ -78,7 +78,7 @@
                                           <select class="form-select border-0 dash-filter-picker shadow" id="myagent" aria-label="Default select example" onchange="myFunction()">
                                              <option selected>Select Agent</option>
                                              <?php if (is_array($agt) || is_object($agt)){foreach($agt as $agn){ ?>
-                                             <option value="<?php echo $agn['name']; ?>"><?php echo $agn['name']; ?></option>
+                                             <option value="<?php echo $agn['username']; ?>"><?php echo $agn['name']; ?></option>
                                              <?php }}else{echo '<p>No records found.</p>';} ?>
                                           </select>
                                        </div>
