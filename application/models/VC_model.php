@@ -248,24 +248,24 @@
 
 
 public function dashboard_data($user, $from_date, $to_date, $team, $startSecond, $endSecond){
-    // 🔹 Default values    
+    // 🔹 Default values
     $from_date = $from_date . ' 00:00:00';
     $to_date = $to_date . ' 23:59:59';
     $team = $this->session->userdata("team");
 
-    // 🔹 Escape values (IMPORTANT for security)    
+    // 🔹 Escape values (IMPORTANT for security)
     $from_date = $this->db->escape($from_date);
     $to_date = $this->db->escape($to_date);
 
     $where = [];
 
-    // Base condition    
+    // Base condition
     $where[] = "cv.application_type = 'VCall'";
 
-    // 🔹 Personal numbers wipeout condition (Global exclusion)    
-    $where[] = "cv.receiver_phone_number NOT IN (SELECT number FROM presonalNumberWipeOut WHERE status = 1)";
+    // 🔹 Personal numbers wipeout condition (Global exclusion using NOT EXISTS)
+    $where[] = "NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)";
 
-    // 🔹 User filter    
+    // 🔹 User filter
     if (!empty($user)) {
         $where[] = "(cv.user_name LIKE '%$user%' OR REPLACE(cv.user_name, ' ', '') LIKE '%" . str_replace(' ', '', $user) . "%')";
     }
@@ -274,7 +274,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
         $where[] = "u.team = $team";
     }
 
-    // 🔹 Date filters (VERY IMPORTANT to escape)    
+    // 🔹 Date filters (VERY IMPORTANT to escape)
     if (!empty($from_date)) {
         $where[] = "cv.call_date >= $from_date";
     }
@@ -282,7 +282,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
         $where[] = "cv.call_date <= $to_date";
     }
 
-    // 🔹 New Duration Filter ($startSecond aur $endSecond ke liye)    
+    // 🔹 New Duration Filter ($startSecond aur $endSecond ke liye)
     if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
         $startSecond = (int)$startSecond;
         $endSecond = (int)$endSecond;
@@ -290,13 +290,13 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
         $where[] = "cv.duration REGEXP '^[0-9]+$' AND CAST(cv.duration AS UNSIGNED) BETWEEN $startSecond AND $endSecond";
     }
 
-    // 🔹 Exclude UNKNOWN    
+    // 🔹 Exclude UNKNOWN
     $where[] = "cv.call_type != 'UNKNOWN'";
 
-    // Final WHERE string    
+    // Final WHERE string
     $where_sql = "WHERE " . implode(" AND ", $where);
 
-    // 🔥 MAIN QUERY (Agent + Total) - JOIN FIXED HERE
+    // 🔥 MAIN QUERY (Agent + Total)
     $sql = "        SELECT             
                 'TOTAL' AS user_name,             
                 NULL AS sender_phone_number,             
@@ -314,13 +314,11 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
                 SUM(CASE WHEN LOWER(cv.call_type) = 'incoming' AND cv.duration REGEXP '^[0-9]+$' AND cv.duration > 0 THEN CAST(cv.duration AS UNSIGNED) ELSE 0 END) AS total_incoming_call_duration,            
                 1 AS is_total        
             FROM highrise_app_call_logs_vcall cv        
-            INNER JOIN users u ON u.name = cv.user_name        
+            LEFT JOIN users u ON u.name = cv.user_name        
             $where_sql    ";
 
     $query = $this->db->query($sql);
-    $query->result_array();
-	echo $this->db->last_query(); 
-    exit;
+    return $query->result_array();
 }
 
 
