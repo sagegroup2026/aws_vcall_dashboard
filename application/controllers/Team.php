@@ -5,7 +5,7 @@ class Team extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        // Team model ko autoload ya yahan load kar rahe hain
+        // Team model load kiya hai
         $this->load->model('Team_model');
     }
 
@@ -24,7 +24,7 @@ class Team extends CI_Controller {
         $this->load->view('common/head', $data);
         $this->load->view('common/menu');
         $this->load->view('common/sidemenu');
-        $this->load->view('teamsList', $data); 
+        $this->load->view('teamsList', $data);
         $this->load->view('common/footer');
     }
 
