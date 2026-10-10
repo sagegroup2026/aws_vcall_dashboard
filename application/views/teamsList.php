@@ -38,7 +38,7 @@
                                         <thead class="table-dark">
                                             <tr>
                                                 <th style="width: 80px;">Sr. No.</th>
-                                                <th class="la">Team Name</th>
+                                                <th>Team Name</th>
                                                 <th>Team Head Name</th>
                                                 <th style="width: 120px;">Action</th>
                                             </tr>
@@ -51,7 +51,7 @@
                                             ?>
                                             <tr>
                                                 <td class="fw-medium"><?php echo $x++; ?></td>
-                                                <td class="la"><?php echo htmlspecialchars($cd['tname']); ?></td>
+                                                <td><?php echo htmlspecialchars($cd['tname']); ?></td>
                                                 <td><?php echo htmlspecialchars(isset($cd['team_head_name']) ? $cd['team_head_name'] : $cd['thead']); ?></td>
                                                 <td>
                                                     <button type="button" class="btn btn-sm btn-soft-primary edit-btn" onclick="editTeam(<?php echo $cd['id']; ?>)">
