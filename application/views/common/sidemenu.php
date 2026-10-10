@@ -43,7 +43,9 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
 								 <li class="nav-item">
                                     <a href="<?php echo base_url(); ?>teamsList" class="nav-link" data-key="t-auto">Teams</a>
                                  </li>
-                                 
+                                 <li class="nav-item">
+                                    <a href="<?php echo base_url(); ?>member" class="nav-link" data-key="t-auto">Team Members</a>
+                                 </li>
                               </ul>
                            </div>
                         </li>

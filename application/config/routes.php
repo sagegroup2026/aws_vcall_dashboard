@@ -90,3 +90,5 @@ $route['never-logged-in-report'] = 'Rpt/never_logged_in_report';
 $route['teamsList'] = 'Team/teamsList';
 $route['Team/save_team_ajax'] = 'Team/save_team_ajax';
 $route['Team/get_team_data'] = 'Team/get_team_data';
+
+$route['member'] = 'Member';
