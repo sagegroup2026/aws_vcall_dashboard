@@ -1,15 +1,12 @@
 <style>
-    th, td{text-align: center;vertical-align: middle;}
-    .la{text-align: left !important;}
+    .table th, .table td { text-align: center; vertical-align: middle; }
+    .table .la { text-align: left !important; }
 </style>
 
 <!-- SweetAlert2 CDN -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- ============================================================== -->
-<!-- Start right Content here -->
-<!-- ============================================================== -->
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
@@ -18,9 +15,8 @@
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                         <h4 class="mb-sm-0">Teams List</h4>
-
                         <div class="page-title-right">
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#teamModal" onclick="openAddModal()">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#teamModal" onclick="openAddModal()">
                                 <i class="ri-add-line align-bottom me-1"></i> Add New Team
                             </button>
                         </div>
@@ -34,42 +30,51 @@
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Manage Teams</h4>
-                        </div><!-- end card header -->
+                        </div>
                         <div class="card-body">
                             <div class="live-preview">
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-nowrap align-middle mb-0">
+                                    <table class="table table-striped align-middle mb-0">
                                         <thead class="table-dark">
                                             <tr>
-                                                <th>Sr. No.</th>
+                                                <th style="width: 80px;">Sr. No.</th>
                                                 <th class="la">Team Name</th>
                                                 <th>Team Head Name</th>
-                                                <th>Action</th>
+                                                <th style="width: 120px;">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php $x = 1; if(!empty($total) && is_array($total)){ foreach($total as $cd){ ?>
+                                            <?php 
+                                            $x = 1; 
+                                            if(!empty($total) && is_array($total)){ 
+                                                foreach($total as $cd){ 
+                                            ?>
                                             <tr>
                                                 <td class="fw-medium"><?php echo $x++; ?></td>
-                                                <td class="la"><?php echo $cd['tname']; ?></td>
-                                                <td><?php echo isset($cd['team_head_name']) ? $cd['team_head_name'] : $cd['thead']; ?></td>
+                                                <td class="la"><?php echo htmlspecialchars($cd['tname']); ?></td>
+                                                <td><?php echo htmlspecialchars(isset($cd['team_head_name']) ? $cd['team_head_name'] : $cd['thead']); ?></td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-soft-primary edit-btn" onclick="editTeam(<?php echo $cd['id']; ?>)">
+                                                    <button type="button" class="btn btn-sm btn-soft-primary edit-btn" onclick="editTeam(<?php echo $cd['id']; ?>)">
                                                         <i class="ri-pencil-fill"></i> Edit
                                                     </button>
                                                 </td>
                                             </tr>
-                                            <?php }}else{echo '<tr><td colspan="4" class="text-center">No records found.</td></tr>';} ?>
+                                            <?php 
+                                                }
+                                            } else {
+                                                echo '<tr><td colspan="4" class="text-center">No records found.</td></tr>';
+                                            } 
+                                            ?>
                                         </tbody>
                                     </table> 
                                 </div>
                             </div>
-                        </div><!-- end card-body -->
-                    </div><!-- end card -->
-                </div><!-- end col -->
-            </div><!-- end row -->
-        </div><!-- container-fluid -->
-    </div><!-- End Page-content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Add / Edit Team Modal -->
@@ -85,7 +90,7 @@
                     <input type="hidden" name="team_id" id="team_id">
                     <div class="mb-3">
                         <label for="tname" class="form-label">Team Name</label>
-                        <input type="text" class="form-control" id="tname" name="tname" required placeholder="Enter team name">
+                        <input type="text" class="form-conrol form-control" id="tname" name="tname" required placeholder="Enter team name">
                     </div>
                     <div class="mb-3">
                         <label for="thead" class="form-label">Team Head</label>
@@ -136,7 +141,7 @@
         });
     }
 
-    $('#teamForm').on('submit', function(e) {
+    $(document).off('submit', '#teamForm').on('submit', '#teamForm', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
 
@@ -147,6 +152,7 @@
             dataType: "json",
             success: function(response) {
                 if(response.status === 'success') {
+                    $('#teamModal').modal('hide');
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
