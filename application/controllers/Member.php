@@ -40,25 +40,29 @@ class Member extends CI_Controller {
             'status'      => 1
         ];
 
-        if(empty($data['name']) || empty($data['username']) || empty($data['email'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Required fields cannot be empty!']);
+        if(empty($data['name']) || empty($data['mobile'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Name and Mobile cannot be empty!']);
             return;
         }
 
         if(empty($id)) {
             $data['created_on'] = date('Y-m-d H:i:s');
             $result = $this->Member_model->insert_member($data);
-            if($result) {
+            
+            if($result == 'exists') {
+                echo json_encode(['status' => 'exists', 'message' => 'This mobile number is already registered!']);
+            } elseif($result == 'success') {
                 echo json_encode(['status' => 'success', 'message' => 'Member added successfully!']);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Failed to add member!']);
             }
         } else {
             $result = $this->Member_model->update_member($id, $data);
-            if($result) {
-                echo json_encode(['status' => 'success', 'message' => 'Member updated successfully!']);
+            
+            if($result == 'exists') {
+                echo json_encode(['status' => 'exists', 'message' => 'This mobile number is already registered with another member!']);
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Failed to update member!']);
+                echo json_encode(['status' => 'success', 'message' => 'Member updated successfully!']);
             }
         }
     }

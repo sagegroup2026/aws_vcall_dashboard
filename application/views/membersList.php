@@ -225,6 +225,12 @@
                     }).then(() => {
                         location.reload();
                     });
+                } else if(response.status === 'exists') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Already Exists',
+                        text: response.message
+                    });
                 } else {
                     Swal.fire({
                         icon: 'error',

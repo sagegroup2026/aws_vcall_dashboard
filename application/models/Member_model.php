@@ -13,12 +13,31 @@ class Member_model extends CI_Model {
     }
 
     public function insert_member($data) {
-        return $this->db->insert('users', $data);
+        // Check if mobile number already exists
+        $this->db->where('mobile', $data['mobile']);
+        $query = $this->db->get('users');
+        
+        if ($query->num_rows() > 0) {
+            return 'exists';
+        } else {
+            $this->db->insert('users', $data);
+            return $this->db->affected_rows() > 0 ? 'success' : 'error';
+        }
     }
 
-    public function update_member($id, $data) {
-        $this->db->where('id', $id);
-        return $this->db->update('users', $data);
+   public function update_member($id, $data) {
+        // Check if mobile number exists for other users
+        $this->db->where('mobile', $data['mobile']);
+        $this->db->where('id !=', $id);
+        $query = $this->db->get('users');
+
+        if ($query->num_rows() > 0) {
+            return 'exists';
+        } else {
+            $this->db->where('id', $id);
+            $this->db->update('users', $data);
+            return 'success';
+        }
     }
 
     public function get_member_by_id($id) {
