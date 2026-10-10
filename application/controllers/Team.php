@@ -20,7 +20,7 @@ class Team extends CI_Controller {
         
         // Team_model se data fetch karein
         $data['total'] = $this->Team_model->get_teams();
-		print_r($data);exit;
+		//print_r($data);exit;
         $data['users'] = $this->db->where('status', 1)->get('users')->result_array();
 
         $this->load->view('common/head', $data);
