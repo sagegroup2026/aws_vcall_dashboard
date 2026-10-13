@@ -388,7 +388,35 @@ class VCall extends CI_Controller {
         $this->load->view('common/footer');
 	}
 
-    public function aprod()
+    
+
+    // Masters Pages
+    public function team()
+	{
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+        $url = ucwords(str_replace('-', ' ', $uri[2]));
+
+        // SEO Variables
+        $data['title'] = $url . ' | VCall - Admin & Dashboard';
+        $data['description'] = $url . ' | VCall - Admin & Dashboard';
+        
+        // Database Variables
+        $data['teams'] = $this->VC_model->team();
+        $data['team_details'] = $this->VC_model->team_details();
+        
+        
+       
+
+		$this->load->view('common/head', $data);
+        $this->load->view('common/menu');
+        $this->load->view('common/sidemenu');
+        $this->load->view('teams', $data);
+        $this->load->view('common/footer');
+	}
+
+    
+
+	public function aprod()
 	{
         $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         $url = ucwords(str_replace('-', ' ', $uri[2]));
@@ -449,31 +477,25 @@ class VCall extends CI_Controller {
         $this->load->view('common/footer');
 	}
 
-    // Masters Pages
-    public function team()
-	{
-        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-        $url = ucwords(str_replace('-', ' ', $uri[2]));
 
-        // SEO Variables
-        $data['title'] = $url . ' | VCall - Admin & Dashboard';
-        $data['description'] = $url . ' | VCall - Admin & Dashboard';
-        
-        // Database Variables
-        $data['teams'] = $this->VC_model->team();
-        $data['team_details'] = $this->VC_model->team_details();
-        
-        
-       
 
-		$this->load->view('common/head', $data);
-        $this->load->view('common/menu');
-        $this->load->view('common/sidemenu');
-        $this->load->view('teams', $data);
-        $this->load->view('common/footer');
-	}
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
