@@ -7,6 +7,7 @@ class Member_model extends CI_Model {
         $this->db->select('users.*, team.tname');
         $this->db->from('users');
         $this->db->join('team', 'team.id = users.team', 'left');
+		$this->db->where('users.status', 1);
         $this->db->order_by('users.id', 'DESC');
         $query = $this->db->get();
         return $query->result_array();
