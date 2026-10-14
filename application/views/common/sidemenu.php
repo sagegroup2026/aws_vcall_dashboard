@@ -156,7 +156,7 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                            <div class="collapse menu-dropdown" id="sidebarAgentReport">
                               <ul class="nav nav-sm flex-column">
                                  <li class="nav-item">
-                                    <a href="<?php echo base_url(); ?>bookingReport<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">All Bookings Report</a>
+                                    <a href="bookingReport<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">All Bookings Report</a>
                                  </li>
 				 <li class="nav-item">
                                     <a href="daily-performance-report<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">Daily Performance Report</a>
