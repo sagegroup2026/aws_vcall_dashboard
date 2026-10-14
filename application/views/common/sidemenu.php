@@ -149,7 +149,7 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                                  </li>
                               </ul>
                            </div>
-                        </li>
+                        </li> 
 
                         <li class="nav-item">
                            <a href="sidebarAgentReport" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarEmail" data-key="t-rpt">Other Reports</a>
