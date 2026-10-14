@@ -105,7 +105,8 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                   </a>
                   <div class="collapse menu-dropdown" id="sidebarReports">
                      <ul class="nav nav-sm flex-column">
-                        <li class="nav-item">
+                        
+					 <!--<li class="nav-item">
                            <a href="#sidebarCallReport" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" >Call Reports</a>
                            <div class="collapse menu-dropdown" id="sidebarCallReport">
                               <ul class="nav nav-sm flex-column">
@@ -117,7 +118,7 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                                  </li>
                               </ul>
                            </div>
-                        </li>
+                        </li>-->
 
                         <li class="nav-item">
                            <a href="sidebarAgentReport" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarEmail" data-key="t-rpt">Agent Reports</a>
@@ -155,7 +156,7 @@ if(!empty($ed)){$ed = $ed;}else{$ed = $curd;}
                            <div class="collapse menu-dropdown" id="sidebarAgentReport">
                               <ul class="nav nav-sm flex-column">
                                  <li class="nav-item">
-                                    <a href="team-call-report<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">All Bookings Report</a>
+                                    <a href="<?php echo base_url(); ?>bookingReport<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">All Bookings Report</a>
                                  </li>
 				 <li class="nav-item">
                                     <a href="daily-performance-report<?php echo '?sd=' . $sd . '&ed=' . $ed; ?>" class="nav-link" data-key="t-auto">Daily Performance Report</a>

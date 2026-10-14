@@ -93,3 +93,5 @@ $route['Team/save_team_ajax'] = 'Team/save_team_ajax';
 $route['Team/get_team_data'] = 'Team/get_team_data';
 
 $route['member'] = 'Member';
+
+$route['bookingReport'] = 'Rpt/booking_report';
