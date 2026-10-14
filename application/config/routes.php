@@ -94,4 +94,4 @@ $route['Team/get_team_data'] = 'Team/get_team_data';
 
 $route['member'] = 'Member';
 
-$route['bookingReport'] = 'Rpt/booking_report';
+$route['bookingReport'] = 'Booking/booking_report';
