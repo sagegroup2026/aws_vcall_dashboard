@@ -368,7 +368,15 @@
             success: function(response) {
                 if(response.status === 'success') {
                     $('#booking_id').val(response.data.id);
-                    $('#booking_date').val(response.data.booking_date);
+                    
+                    // Date ko properly YYYY-MM-DD format mein convert karke set karna
+                    if(response.data.booking_date) {
+                        let formattedDate = new Date(response.data.booking_date).toISOString().split('T')[0];
+                        $('#booking_date').val(formattedDate);
+                    } else {
+                        $('#booking_date').val('');
+                    }
+
                     $('#booking_month').val(response.data.booking_month);
                     $('#booking_year').val(response.data.booking_year);
                     $('#customer_name').val(response.data.customer_name);
