@@ -63,9 +63,9 @@ class Booking extends CI_Controller {
             return;
         }
 
-        // Date ko properly standard format (YYYY-MM-DD) mein convert karna
-        $raw_date = $this->input->post('booking_date');
-        $formatted_date = !empty($raw_date) ? date('Y-m-d', strtotime($raw_date)) : '';
+        // Date ko "February 23, 2026" format mein convert karna
+		$raw_date = $this->input->post('booking_date');
+		$formatted_date = !empty($raw_date) ? date('F j, Y', strtotime($raw_date)) : '';
 
         $data = [
             'booking_date'   => $formatted_date,
