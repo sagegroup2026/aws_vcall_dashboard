@@ -187,7 +187,8 @@
                                                     }
 
                                                     $userWorkMap = [];
-
+													echo "<pre>";
+                                                    print_r($bookingFileCV);
                                                     foreach($bookingFileCV as $row){
                                                         $userWorkMap[trim(strtolower($row['user_name']))] = $row;
                                                     }
