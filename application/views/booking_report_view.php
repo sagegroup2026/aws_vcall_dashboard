@@ -374,8 +374,20 @@ function editBooking(id) {
                 if(response.status === 'success') {
                     $('#booking_id').val(response.data.id);
                     
-                    // Seedha database ki date set karein bina conversion ke
-                    $('#booking_date').val(response.data.booking_date || '');
+                    // Date ko YYYY-MM-DD format mein convert karke input field mein set karna
+                    if(response.data.booking_date) {
+                        let d = new Date(response.data.booking_date);
+                        if (!isNaN(d.getTime())) {
+                            let year = d.getFullYear();
+                            let month = String(d.getMonth() + 1).padStart(2, '0');
+                            let day = String(d.getDate()).padStart(2, '0');
+                            $('#booking_date').val(year + '-' + month + '-' + day);
+                        } else {
+                            $('#booking_date').val('');
+                        }
+                    } else {
+                        $('#booking_date').val('');
+                    }
 
                     $('#booking_month').val(response.data.booking_month);
                     $('#booking_year').val(response.data.booking_year);
