@@ -282,29 +282,54 @@
     }
 
     function renderPagination(total_records, total_pages, current_page, per_page) {
-        var start_entry = total_records === 0 ? 0 : (current_page - 1) * per_page + 1;
-        var end_entry = Math.min(current_page * per_page, total_records);
-        
-        $('#table_info').text('Showing ' + start_entry + ' to ' + end_entry + ' of ' + total_records + ' entries');
+    var start_entry = total_records === 0 ? 0 : (current_page - 1) * per_page + 1;
+    var end_entry = Math.min(current_page * per_page, total_records);
+    
+    $('#table_info').text('Showing ' + start_entry + ' to ' + end_entry + ' of ' + total_records + ' entries');
 
-        var paginationHtml = '';
-        if(total_pages > 1) {
-            // Previous button
-            var prevDisabled = current_page === 1 ? 'disabled' : '';
-            paginationHtml += '<li class="page-item ' + prevDisabled + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + (current_page - 1) + '">Previous</a></li>';
+    var paginationHtml = '';
+    if(total_pages > 1) {
+        // Previous button
+        var prevDisabled = current_page === 1 ? 'disabled' : '';
+        paginationHtml += '<li class="page-item ' + prevDisabled + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + (current_page - 1) + '">Previous</a></li>';
 
-            // Page numbers
-            for(var i = 1; i <= total_pages; i++) {
-                var active = i === current_page ? 'active' : '';
-                paginationHtml += '<li class="page-item ' + active + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + i + '">' + i + '</a></li>';
-            }
+        // Logic to limit visible page numbers
+        var maxVisiblePages = 5;
+        var startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+        var endPage = Math.min(total_pages, startPage + maxVisiblePages - 1);
 
-            // Next button
-            var nextDisabled = current_page === total_pages ? 'disabled' : '';
-            paginationHtml += '<li class="page-item ' + nextDisabled + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + (current_page + 1) + '">Next</a></li>';
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
         }
-        $('#pagination_links').html(paginationHtml);
+
+        // First page + ellipsis if needed
+        if (startPage > 1) {
+            paginationHtml += '<li class="page-item"><a class="page-link ajax-pagination-link" href="#" data-page="1">1</a></li>';
+            if (startPage > 2) {
+                paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+        }
+
+        // Page numbers
+        for(var i = startPage; i <= endPage; i++) {
+            var active = i === current_page ? 'active' : '';
+            paginationHtml += '<li class="page-item ' + active + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+        }
+
+        // Last page + ellipsis if needed
+        if (endPage < total_pages) {
+            if (endPage < total_pages - 1) {
+                paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+            paginationHtml += '<li class="page-item"><a class="page-link ajax-pagination-link" href="#" data-page="' + total_pages + '">' + total_pages + '</a></li>';
+        }
+
+        // Next button
+        var nextDisabled = current_page === total_pages ? 'disabled' : '';
+        paginationHtml += '<li class="page-item ' + nextDisabled + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + (current_page + 1) + '">Next</a></li>';
     }
+    $('#pagination_links').html(paginationHtml);
+}
 
     function escapeHtml(text) {
         if (!text) return '';
