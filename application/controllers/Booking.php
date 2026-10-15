@@ -44,7 +44,6 @@ class Booking extends CI_Controller {
     }
 
     // AJAX: Add ya Update Booking with Duplicate Validation
-    // AJAX: Add ya Update Booking with Duplicate Validation
     public function save_booking_ajax() {
         $id = $this->input->post('booking_id');
         $project = trim($this->input->post('project'));
@@ -64,12 +63,12 @@ class Booking extends CI_Controller {
             return;
         }
 
-        // Date ko properly standard format (YYYY-MM-DD) mein convert karna
+        // Yahan input date ko Y-m-d (YYYY-MM-DD) format mein pakka kar rahe hain
         $raw_date = $this->input->post('booking_date');
         $formatted_date = !empty($raw_date) ? date('Y-m-d', strtotime($raw_date)) : '';
 
         $data = [
-            'booking_date'   => $formatted_date, // Yahan standard format save hoga
+            'booking_date'   => $formatted_date, // Ab database mein hamesha YYYY-MM-DD hi jayega
             'booking_day'    => !empty($formatted_date) ? date('D', strtotime($formatted_date)) : '',
             'booking_week'   => !empty($formatted_date) ? date('W', strtotime($formatted_date)) : '',
             'booking_month'  => $this->input->post('booking_month'),
