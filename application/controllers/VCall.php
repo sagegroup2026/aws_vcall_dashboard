@@ -439,7 +439,8 @@ class VCall extends CI_Controller {
         
          /***********Back Office Data Start***********/  
          $data['bookingFileCV'] = $this->VC_model->highrise_app_back_office_productivity_table_Count($sd,$ed);
-
+		 echo "<pre>";
+         print_r($data['bookingFileCV']);exit;
          /***********All Calling Data Start***********/    
          $report = $this->Report_model->total_call_optimised($sd, $ed);
 
