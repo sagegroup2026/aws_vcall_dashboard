@@ -196,7 +196,7 @@
                             <select class="form-select" id="DGM_Name" name="DGM_Name" required>
                                 <option value="">Select DGM</option>
                                 <?php if(!empty($dgms)){ foreach($dgms as $dgm){ ?>
-                                    <option value="<?php echo $dgm['name']; ?>"><?php echo $dgm['name']; ?></option>
+                                    <option value="<?php echo $dgm['username']; ?>"><?php echo $dgm['name']; ?></option>
                                 <?php }} ?>
                             </select>
                         </div>
