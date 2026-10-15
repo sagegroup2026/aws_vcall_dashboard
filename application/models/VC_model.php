@@ -1005,8 +1005,8 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
     $this->db2->order_by('user_name', 'ASC');
 
     $query = $this->db2->get();
-     $query->result_array();
-	echo $this->db2->last_query();
+    return $query->result_array();
+
         }
 
 
