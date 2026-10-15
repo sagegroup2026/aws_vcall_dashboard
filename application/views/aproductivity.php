@@ -195,7 +195,8 @@
                                                     $data['userWorkMap'] = $userWorkMap;
 
 
-
+													echo "<pre>";
+                                                    print_r($userWorkMap);
                                                     
                                                     ?>
                                                 <tbody>
