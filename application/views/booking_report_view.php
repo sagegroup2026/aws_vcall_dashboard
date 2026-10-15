@@ -193,11 +193,16 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="DGM_Name" class="form-label">DGM Name</label>
-                            <input type="text" class="form-control" id="DGM_Name" name="DGM_Name" placeholder="Enter DGM Name">
+                            <select class="form-select" id="DGM_Name" name="DGM_Name" required>
+                                <option value="">Select DGM</option>
+                                <?php if(!empty($dgms)){ foreach($dgms as $dgm){ ?>
+                                    <option value="<?php echo $dgm['name']; ?>"><?php echo $dgm['name']; ?></option>
+                                <?php }} ?>
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="highrise" class="form-label">Highrise</label>
+                            <label for="highrise" class="form-label">Highrise Number</label>
                             <input type="text" class="form-control" id="highrise" name="highrise" placeholder="Enter highrise">
                         </div>
                     </div>

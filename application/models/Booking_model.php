@@ -75,4 +75,18 @@ class Booking_model extends CI_Model {
         $query = $this->db->get('bookings_data');
         return $query->result_array();
     }
+
+	// Users table se jinki designation 'DGM' hai unhe fetch karne ke liye
+    public function get_dgms() {
+        $this->db->where('designation', 'DGM');
+        $this->db->where('status', 1); // Agar active status check karna ho
+        $query = $this->db->get('users');
+        return $query->result_array();
+    }
+
+
+
+
+
+
 }

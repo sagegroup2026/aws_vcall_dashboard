@@ -13,6 +13,7 @@ class Booking extends CI_Controller {
         $data['teams'] = $this->db->where('status', 1)->get('team')->result_array(); 
         $data['users'] = $this->db->where('status', 1)->get('users')->result_array(); 
         $data['projects'] = $this->Booking_model->get_projects();
+		$data['dgms'] = $this->Booking_model->get_dgms();
 
         $this->load->view('common/head', $data);
         $this->load->view('common/menu');
