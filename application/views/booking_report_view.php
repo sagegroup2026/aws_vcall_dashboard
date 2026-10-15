@@ -1,6 +1,7 @@
 <style>
     .table th, .table td { text-align: center; vertical-align: middle; font-size: 13px; }
     .table .la { text-align: left !important; }
+    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
 </style>
 
 <div class="main-content">
@@ -26,6 +27,15 @@
                     <div class="card">
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Manage Bookings</h4>
+                            <div class="flex-shrink-0 d-flex gap-2">
+                                <select id="per_page_limit" class="form-select form-select-sm" style="width: 80px;">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <input type="text" id="table_search" class="form-control form-control-sm" placeholder="Search...">
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="live-preview">
@@ -46,37 +56,17 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <?php 
-                                            $x = 1; 
-                                            if(!empty($bookings) && is_array($bookings)){ 
-                                                foreach($bookings as $bk){ 
-                                            ?>
-                                            <tr>
-                                                <td class="fw-medium"><?php echo $x++; ?></td>
-                                                <td><?php echo htmlspecialchars($bk['booking_date']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['booking_month'] . ' ' . $bk['booking_year']); ?></td>
-                                                <td class="la"><?php echo htmlspecialchars($bk['customer_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['project']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['unit']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['type']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['sales_person']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['team']); ?></td>
-                                                <td><?php echo htmlspecialchars($bk['bookings']); ?></td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-soft-primary edit-btn" onclick="editBooking(<?php echo $bk['id']; ?>)">
-                                                        <i class="ri-pencil-fill"></i> Edit
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <?php 
-                                                }
-                                            } else {
-                                                echo '<tr><td colspan="11" class="text-center">No records found.</td></tr>';
-                                            } 
-                                            ?>
+                                        <tbody id="bookings_table_body">
+                                            <!-- AJAX Data will load here -->
                                         </tbody>
                                     </table> 
+                                </div>
+                                <!-- Pagination Info & Links -->
+                                <div class="pagination-container">
+                                    <div id="table_info" class="text-muted font-size-13"></div>
+                                    <nav>
+                                        <ul id="pagination_links" class="pagination pagination-sm mb-0"></ul>
+                                    </nav>
                                 </div>
                             </div>
                         </div>
@@ -223,6 +213,104 @@
 
 <!-- AJAX & Script -->
 <script>
+    var current_page = 1;
+
+    $(document).ready(function() {
+        loadBookings(current_page);
+
+        // Per page limit change
+        $('#per_page_limit').change(function() {
+            loadBookings(1);
+        });
+
+        // Search filter keyup
+        $('#table_search').keyup(function() {
+            loadBookings(1);
+        });
+
+        // Pagination click event
+        $(document).on('click', '.ajax-pagination-link', function(e) {
+            e.preventDefault();
+            var page = $(this).data('page');
+            loadBookings(page);
+        });
+    });
+
+    function loadBookings(page) {
+        var limit = $('#per_page_limit').val();
+        var search = $('#table_search').val();
+
+        $.ajax({
+            url: "<?php echo base_url('Booking/fetch_bookings_ajax'); ?>",
+            type: "POST",
+            data: { page: page, limit: limit, search: search },
+            dataType: "json",
+            success: function(response) {
+                if(response.status === 'success') {
+                    var rows = '';
+                    var data = response.data;
+                    
+                    if(data.length > 0) {
+                        var sno = (response.current_page - 1) * response.per_page + 1;
+                        $.each(data, function(index, bk) {
+                            rows += '<tr>';
+                            rows += '<td class="fw-medium">' + (sno++) + '</td>';
+                            rows += '<td>' + escapeHtml(bk.booking_date) + '</td>';
+                            rows += '<td>' + escapeHtml((bk.booking_month || '') + ' ' + (bk.booking_year || '')) + '</td>';
+                            rows += '<td>' + escapeHtml(bk.customer_name || '') + '</td>';
+                            rows += '<td>' + escapeHtml(bk.project || '') + '</td>';
+                            rows += '<td>' + escapeHtml(bk.unit || '') + '</td>';
+                            rows += '<td>' + escapeHtml(bk.type || '') + '</td>';
+                            rows += '<td>' + escapeHtml(bk.sales_person || '') + '</td>';
+                            rows += '<td>' + escapeHtml(bk.team || '') + '</td>';
+                            rows += '<td>' + escapeHtml(bk.bookings || '') + '</td>';
+                            rows += '<td>';
+                            rows += '<button type="button" class="btn btn-sm btn-soft-primary edit-btn" onclick="editBooking(' + bk.id + ')"><i class="ri-pencil-fill"></i> Edit</button>';
+                            rows += '</td>';
+                            rows += '</tr>';
+                        });
+                    } else {
+                        rows += '<tr><td colspan="11" class="text-center">No records found.</td></tr>';
+                    }
+                    $('#bookings_table_body').html(rows);
+
+                    // Render Pagination Info & Links
+                    renderPagination(response.total_records, response.total_pages, response.current_page, response.per_page);
+                }
+            }
+        });
+    }
+
+    function renderPagination(total_records, total_pages, current_page, per_page) {
+        var start_entry = total_records === 0 ? 0 : (current_page - 1) * per_page + 1;
+        var end_entry = Math.min(current_page * per_page, total_records);
+        
+        $('#table_info').text('Showing ' + start_entry + ' to ' + end_entry + ' of ' + total_records + ' entries');
+
+        var paginationHtml = '';
+        if(total_pages > 1) {
+            // Previous button
+            var prevDisabled = current_page === 1 ? 'disabled' : '';
+            paginationHtml += '<li class="page-item ' + prevDisabled + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + (current_page - 1) + '">Previous</a></li>';
+
+            // Page numbers
+            for(var i = 1; i <= total_pages; i++) {
+                var active = i === current_page ? 'active' : '';
+                paginationHtml += '<li class="page-item ' + active + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+            }
+
+            // Next button
+            var nextDisabled = current_page === total_pages ? 'disabled' : '';
+            paginationHtml += '<li class="page-item ' + nextDisabled + '"><a class="page-link ajax-pagination-link" href="#" data-page="' + (current_page + 1) + '">Next</a></li>';
+        }
+        $('#pagination_links').html(paginationHtml);
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return $('<div>').text(text).html();
+    }
+
     function autoFillMonthYear(dateVal) {
         if(dateVal) {
             let d = new Date(dateVal);
@@ -299,7 +387,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        location.reload();
+                        loadBookings(current_page);
                     });
                 } else if(response.status === 'exists') {
                     Swal.fire({

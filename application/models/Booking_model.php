@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Booking_model extends CI_Model {
 
@@ -7,9 +6,34 @@ class Booking_model extends CI_Model {
         parent::__construct();
     }
 
-    // Saari bookings fetch karne ke liye
+    // Saari bookings fetch karne ke liye (DESC order)
     public function get_bookings() {
         $this->db->order_by('id', 'DESC');
+        $query = $this->db->get('bookings_data');
+        return $query->result_array();
+    }
+
+    // Pagination ke liye total records count karne ke liye
+    public function get_bookings_count($search = '') {
+        if(!empty($search)) {
+            $this->db->like('customer_name', $search);
+            $this->db->or_like('project', $search);
+            $this->db->or_like('unit', $search);
+            $this->db->or_like('sales_person', $search);
+        }
+        return $this->db->count_all_results('bookings_data');
+    }
+
+    // Limit aur offset ke sath paginated data fetch karne ke liye (DESC order)
+    public function get_paginated_bookings($limit, $start, $search = '') {
+        if(!empty($search)) {
+            $this->db->like('customer_name', $search);
+            $this->db->or_like('project', $search);
+            $this->db->or_like('unit', $search);
+            $this->db->or_like('sales_person', $search);
+        }
+        $this->db->order_by('id', 'DESC');
+        $this->db->limit($limit, $start);
         $query = $this->db->get('bookings_data');
         return $query->result_array();
     }

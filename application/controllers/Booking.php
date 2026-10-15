@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Booking extends CI_Controller {
 
@@ -8,12 +7,9 @@ class Booking extends CI_Controller {
         $this->load->model('Booking_model');
     }
 
-    
     public function booking_report() {
         $data['title'] = 'All Bookings Report | VCall - Admin & Dashboard';
         
-        $data['bookings'] = $this->Booking_model->get_bookings();
-		
         $data['teams'] = $this->db->where('status', 1)->get('team')->result_array(); 
         $data['users'] = $this->db->where('status', 1)->get('users')->result_array(); 
         $data['projects'] = $this->Booking_model->get_projects();
@@ -23,6 +19,28 @@ class Booking extends CI_Controller {
         $this->load->view('common/sidemenu');
         $this->load->view('booking_report_view', $data);
         $this->load->view('common/footer');
+    }
+
+    // AJAX: Fetch bookings for pagination & AJAX table load
+    public function fetch_bookings_ajax() {
+        $limit = $this->input->post('limit') ? intval($this->input->post('limit')) : 10;
+        $page = $this->input->post('page') ? intval($this->input->post('page')) : 1;
+        $search = $this->input->post('search') ? trim($this->input->post('search')) : '';
+
+        $start = ($page - 1) * $limit;
+
+        $bookings = $this->Booking_model->get_paginated_bookings($limit, $start, $search);
+        $total_records = $this->Booking_model->get_bookings_count($search);
+        $total_pages = ceil($total_records / $limit);
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $bookings,
+            'total_records' => $total_records,
+            'total_pages' => $total_pages,
+            'current_page' => $page,
+            'per_page' => $limit
+        ]);
     }
 
     // AJAX: Add ya Update Booking with Duplicate Validation
