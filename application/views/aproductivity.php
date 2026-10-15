@@ -344,7 +344,7 @@
                                                             foreach($team_details as $tds){ 
                                                             if($tds['tname']=='eMarketing'){
 
-                                                                $cleanName = trim(strtolower($tds['name']));
+                                                               echo $cleanName = trim(strtolower($tds['name']));
                                                                 $meeting_with_senior = 0;
 
                                                                 if(isset($userWorkMap[$cleanName])){
