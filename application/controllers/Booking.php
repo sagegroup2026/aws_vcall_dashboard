@@ -13,7 +13,7 @@ class Booking extends CI_Controller {
         $data['title'] = 'All Bookings Report | VCall - Admin & Dashboard';
         
         $data['bookings'] = $this->Booking_model->get_bookings();
-		echo print_r($data);exit;
+		
         $data['teams'] = $this->db->where('status', 1)->get('teams')->result_array(); 
         $data['users'] = $this->db->where('status', 1)->get('users')->result_array(); 
         $data['projects'] = $this->Booking_model->get_projects();
