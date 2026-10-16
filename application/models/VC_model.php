@@ -325,7 +325,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 
 
 
-       	public function get_all_calls($user, $sd, $ed, $tid){
+       	public function get_all_calls($user, $sd, $ed, $tid, $startSecond, $endSecond){
             $currentDate = new DateTime();
             $curd = $currentDate->format('Y-m-d');
             if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
@@ -344,10 +344,15 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
             $this->db->where('cv.call_date >=', $sd);
             $this->db->where('cv.call_date <=', $ed);
             $this->db->where('cv.call_type !=', 'UNKNOWN');
+            
+            // Duration filter add kar diya hai:
+            if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
+                $this->db->where('cv.duration >=', $startSecond);
+                $this->db->where('cv.duration <=', $endSecond);
+            }
+
             $this->db->order_by('cv.id', 'desc');
             $qry = $this->db->get();
-//print_r($qry);exit;
-//echo $this->db->last_query();exit;
             return $qry->num_rows();
         }
 
