@@ -6,7 +6,6 @@ class Member_model extends CI_Model {
         $this->db->select('users.*, team.tname');
         $this->db->from('users');
         $this->db->join('team', 'team.id = users.team', 'left');
-        // Alphabetical sorting for members (A to Z)
         $this->db->order_by('users.name', 'ASC');
         $query = $this->db->get();
         return $query->result_array();

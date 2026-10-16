@@ -15,7 +15,6 @@ class Member extends CI_Controller {
         $data['description'] = $url . ' | VCall - Admin & Dashboard';
         
         $data['members'] = $this->Member_model->get_all_members();
-        // Teams ko bhi alphabetical (A to Z) sort kar diya hai dropdown ke liye
         $data['teams'] = $this->db->where('status', 1)->order_by('tname', 'ASC')->get('team')->result_array();
 
         $this->load->view('common/head', $data);
@@ -38,6 +37,7 @@ class Member extends CI_Controller {
             'gender'      => $this->input->post('gender'),
             'designation' => $this->input->post('designation'),
             'team'        => $this->input->post('team'),
+            'user_role'   => $this->input->post('user_role'), // Added user_role
             'status'      => isset($status) ? $status : 1
         ];
 
