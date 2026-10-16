@@ -134,7 +134,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="gender" class="form-label">Gender</label>
-                            <select class="form-select w-100" id="gender" name="gender" required>
+                            <select class="form-select" id="gender" name="gender" required>
                                 <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -147,7 +147,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="designation" class="form-label">Designation</label>
-                            <select class="form-select w-100" id="designation" name="designation" required>
+                            <select class="form-select" id="designation" name="designation" required>
                                 <option value="">Select Designation</option>
                                 <option value="Web Administrator">Web Administrator</option>
                                 <option value="DGM">DGM</option>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="team" class="form-label">Assign Team</label>
-                            <select class="form-select w-100" id="team" name="team">
+                            <select class="form-select" id="team" name="team">
                                 <option value="0">Select Team</option>
                                 <?php if(!empty($teams)){ foreach($teams as $t){ ?>
                                     <option value="<?php echo $t['id']; ?>"><?php echo $t['tname']; ?></option>
@@ -171,7 +171,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="user_role" class="form-label">User Role</label>
-                            <select class="form-select w-100" id="user_role" name="user_role" required>
+                            <select class="form-select" id="user_role" name="user_role" required>
                                 <option value="">Select User Role</option>
                                 <option value="Admin">Admin</option>
                                 <option value="Manager">Manager</option>
@@ -180,7 +180,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select w-100" id="status" name="status" required>
+                            <select class="form-select" id="status" name="status" required>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
@@ -225,7 +225,7 @@
                     $('#gender').val(response.data.gender);
                     $('#designation').val(response.data.designation);
                     $('#team').val(response.data.team);
-                    $('#user_role').val(response.data.user_role); // Populate user_role
+                    $('#user_role').val(response.data.user_role);
                     $('#status').val(response.data.status);
                     
                     $('#memberModalLabel').text('Edit Member');
