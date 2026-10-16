@@ -14,6 +14,8 @@
             $agent = htmlspecialchars($_GET['agent']);
             $usd = htmlspecialchars($_GET['sd']);
             $ued = htmlspecialchars($_GET['ed']);
+			$startSecond = htmlspecialchars($_GET['ss']); 
+            $endSecond = htmlspecialchars($_GET['es']); 
             if($agent == ""){$user = $sess_nm;}
             elseif(!empty($agent)){$user = $agent;}
         ?>
@@ -92,6 +94,19 @@
                                                         <label for="to" class="form-label">Date To</label>
                                                         <input type="date" id="to" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php if(!empty($ued)){echo $ued;}else{echo $curd;} ?>" data-provider="flatpickr" data-range-date="true" data-date-format="d M, Y">
                                                     </div>
+													<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+														<div>
+															<label for="start_sec" class="form-label">Start Sec</label>
+															<input type="number" id="start_sec" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php echo $startSecond; ?>" placeholder="0">
+														</div>
+														<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+														<div>
+															<label for="end_sec" class="form-label">End Sec</label>
+															<input type="number" id="end_sec" class="form-control border-0 dash-filter-picker shadow" onchange="myFunction()" value="<?php echo $endSecond; ?>" placeholder="Sec">
+														</div>
+
+
+
                                                 </div>
                                             </div>
                                             <script>
@@ -99,6 +114,8 @@
                                                     var ag = document.getElementById('myagent');
                                                     var sd = document.getElementById('from');
                                                     var ed = document.getElementById('to');
+													var ss = document.getElementById('start_sec'); 
+                                                    var es = document.getElementById('end_sec');
                                                     var ur = window.location.pathname;
 
                                                     if(ag.value == 'Select Agent'){ag.value = ''}
@@ -108,7 +125,7 @@
                                                         sd.focus();
                                                     }
                                                     else{
-                                                        var url = ur + "?agent=" + ag.value + "&sd=" + sd.value + "&ed=" + ed.value;
+                                                        var url = ur + "?agent=" + ag.value + "&sd=" + sd.value + "&ed=" + ed.value + "&ss=" + ss.value + "&es=" + es.value;
                                           
                                                         location.replace(url);
                                                     }
