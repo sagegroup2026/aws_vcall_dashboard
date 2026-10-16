@@ -39,6 +39,7 @@
                                             <th>Gender</th>
                                             <th>Designation</th>
                                             <th>Team Name</th>
+                                            <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -58,6 +59,13 @@
                                             <td><?php echo htmlspecialchars($m['designation']); ?></td>
                                             <td><?php echo htmlspecialchars($m['tname'] ? $m['tname'] : 'No Team'); ?></td>
                                             <td>
+                                                <?php if(isset($m['status']) && $m['status'] == 1){ ?>
+                                                    <span class="badge bg-success">Active</span>
+                                                <?php } else { ?>
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                <?php } ?>
+                                            </td>
+                                            <td>
                                                 <button type="button" class="btn btn-sm btn-soft-primary" onclick="editMember(<?php echo $m['id']; ?>)">
                                                     <i class="ri-pencil-fill"></i> Edit
                                                 </button>
@@ -66,7 +74,7 @@
                                         <?php 
                                             }
                                         } else {
-                                            echo '<tr><td colspan="9" class="text-center">No records found.</td></tr>';
+                                            echo '<tr><td colspan="10" class="text-center">No records found.</td></tr>';
                                         } 
                                         ?>
                                     </tbody>
@@ -157,6 +165,17 @@
                         </div>
                     </div>
 
+                    <!-- Row 5: Status -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -172,6 +191,7 @@
     function openAddModal() {
         $('#memberForm')[0].reset();
         $('#member_id').val('');
+        $('#status').val('1'); // Default active on add
         $('#memberModalLabel').text('Add New Member');
         $('#saveBtn').text('Save Member');
     }
@@ -193,6 +213,7 @@
                     $('#gender').val(response.data.gender);
                     $('#designation').val(response.data.designation);
                     $('#team').val(response.data.team);
+                    $('#status').val(response.data.status);
                     
                     $('#memberModalLabel').text('Edit Member');
                     $('#saveBtn').text('Update Member');

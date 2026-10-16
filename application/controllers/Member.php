@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Member extends CI_Controller {
 
@@ -16,7 +15,8 @@ class Member extends CI_Controller {
         $data['description'] = $url . ' | VCall - Admin & Dashboard';
         
         $data['members'] = $this->Member_model->get_all_members();
-        $data['teams'] = $this->db->where('status', 1)->get('team')->result_array();
+        // Teams ko bhi alphabetical (A to Z) sort kar diya hai dropdown ke liye
+        $data['teams'] = $this->db->where('status', 1)->order_by('tname', 'ASC')->get('team')->result_array();
 
         $this->load->view('common/head', $data);
         $this->load->view('common/menu');
@@ -27,6 +27,7 @@ class Member extends CI_Controller {
 
     public function save_member_ajax() {
         $id = $this->input->post('member_id');
+        $status = $this->input->post('status');
         
         $data = [
             'name'        => trim($this->input->post('name')),
@@ -37,7 +38,7 @@ class Member extends CI_Controller {
             'gender'      => $this->input->post('gender'),
             'designation' => $this->input->post('designation'),
             'team'        => $this->input->post('team'),
-            'status'      => 1
+            'status'      => isset($status) ? $status : 1
         ];
 
         if(empty($data['name']) || empty($data['mobile'])) {

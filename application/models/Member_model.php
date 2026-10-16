@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Member_model extends CI_Model {
 
@@ -7,14 +6,13 @@ class Member_model extends CI_Model {
         $this->db->select('users.*, team.tname');
         $this->db->from('users');
         $this->db->join('team', 'team.id = users.team', 'left');
-		$this->db->where('users.status', 1);
-        $this->db->order_by('users.id', 'DESC');
+        // Alphabetical sorting for members (A to Z)
+        $this->db->order_by('users.name', 'ASC');
         $query = $this->db->get();
         return $query->result_array();
     }
 
     public function insert_member($data) {
-        // Check if mobile number already exists
         $this->db->where('mobile', $data['mobile']);
         $query = $this->db->get('users');
         
@@ -26,8 +24,7 @@ class Member_model extends CI_Model {
         }
     }
 
-   public function update_member($id, $data) {
-        // Check if mobile number exists for other users
+    public function update_member($id, $data) {
         $this->db->where('mobile', $data['mobile']);
         $this->db->where('id !=', $id);
         $query = $this->db->get('users');
