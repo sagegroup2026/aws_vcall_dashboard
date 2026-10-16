@@ -165,16 +165,16 @@
                         </div>
                     </div>
 
-                    <!-- Row 5: Status -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status" required>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
+                    <!-- Row 5: Status (Paired nicely) -->
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label for="status" class="form-label">Status</label>
+							<select class="form-select w-100" id="status" name="status" required>
+								<option value="1">Active</option>
+								<option value="0">Inactive</option>
+							</select>
+						</div>
+					</div>
 
                 </div>
                 <div class="modal-footer">
