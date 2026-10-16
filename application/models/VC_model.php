@@ -425,34 +425,36 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 		}
 
         public function get_unq_calls($user, $sd, $ed, $tid, $startSecond, $endSecond){
-            $currentDate = new DateTime();
-            $curd = $currentDate->format('Y-m-d');
-            if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
-            if(!empty($ed)){$ed = $ed . ' 23:59:59.000000';}else{$ed = $curd . ' 23:59:59.000000';}
+			$currentDate = new DateTime();
+			$curd = $currentDate->format('Y-m-d');
+			if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
+			if(!empty($ed)){$ed = $ed . ' 23:59:59.000000';}else{$ed = $curd . ' 23:59:59.000000';}
 
-            $this->db->select('DISTINCT(cv.receiver_phone_number)');
-            $this->db->from('highrise_app_call_logs_vcall cv');
-            $this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
-            $this->db->where('cv.application_type','VCall');
-            if(!empty($user)){
-                $this->db->like('cv.user_name', $user, 'both');
-            }
-            if($tid > 0){
-                $this->db->where('u.team',$tid);
-            }
-            $this->db->where('cv.call_date >=', $sd);
-            $this->db->where('cv.call_date <=', $ed);
-            $this->db->where('cv.call_type !=', 'UNKNOWN');
+			$this->db->select('DISTINCT(cv.receiver_phone_number)');
+			$this->db->from('highrise_app_call_logs_vcall cv');
+			$this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
+			$this->db->where('cv.application_type','VCall');
+			if(!empty($user)){
+				$this->db->like('cv.user_name', $user, 'both');
+			}
+			if($tid > 0){
+				$this->db->where('u.team',$tid);
+			}
+			$this->db->where('cv.call_date >=', $sd);
+			$this->db->where('cv.call_date <=', $ed);
+    
+			// Yeh line count wale function mein bhi honi chahiye:
+			$this->db->where('cv.call_type !=', 'UNKNOWN');
+    
+			// Duration filter
+			if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
+				$this->db->where('cv.duration >=', $startSecond);
+				$this->db->where('cv.duration <=', $endSecond);
+			}
 
-			// Duration filter added here:
-				if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
-					$this->db->where('cv.duration >=', $startSecond);
-					$this->db->where('cv.duration <=', $endSecond);
-				}
-
-            $qry = $this->db->get();
-            return $qry->num_rows();
-        }
+			$qry = $this->db->get();
+			return $qry->num_rows();
+		}
 
         public function get_cnctd_calls($user, $sd, $ed, $tid){
             $currentDate = new DateTime();
@@ -781,7 +783,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 			return $qry->result_array();
 		}
 
-        public function get_unq_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond){
+       public function get_unq_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond){
 			$currentDate = new DateTime();
 			$curd = $currentDate->format('Y-m-d');
 			if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
@@ -801,7 +803,10 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 			$this->db->where('cv.call_date >=', $sd);
 			$this->db->where('cv.call_date <=', $ed);
     
-			// Duration filter added here:
+			// Yeh line add karni hai taaki UNKNOWN calls exclude ho jayein:
+			$this->db->where('cv.call_type !=', 'UNKNOWN');
+    
+			// Duration filter
 			if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
 				$this->db->where('cv.duration >=', $startSecond);
 				$this->db->where('cv.duration <=', $endSecond);
@@ -809,7 +814,6 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 
 			$this->db->group_by('cv.receiver_phone_number');
 			$query = $this->db->get();
-			// echo $this->db->last_query();exit;
 			return $query->result_array();
 		}
 
