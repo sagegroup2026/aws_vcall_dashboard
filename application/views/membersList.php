@@ -179,8 +179,8 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status" required>
+                            <label for="member_status" class="form-label">Status</label>
+                            <select class="form-select" id="member_status" name="status" required>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
@@ -202,7 +202,7 @@
     function openAddModal() {
         $('#memberForm')[0].reset();
         $('#member_id').val('');
-        $('#status').val('1'); // Default active on add
+        $('#member_status').val('1'); // Default active on add
         $('#user_role').val('');
         $('#memberModalLabel').text('Add New Member');
         $('#saveBtn').text('Save Member');
