@@ -356,7 +356,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
             return $qry->num_rows();
         }
 
-        public function get_in_calls($user, $sd, $ed, $tid, $startSecond, $endSecond){
+       public function get_in_calls($user, $sd, $ed, $tid, $startSecond, $endSecond){
 			$currentDate = new DateTime();
 			$curd = $currentDate->format('Y-m-d');
 			if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
@@ -366,17 +366,23 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 			$this->db->from('highrise_app_call_logs_vcall cv');
 			$this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
 			$this->db->where('cv.application_type','VCall');
+    
 			if(!empty($user)){
 				$this->db->like('cv.user_name', $user, 'both');
 			}
 			if($tid > 0){
 				$this->db->where('u.team',$tid);
 			}
+    
 			$this->db->where('cv.call_date >=', $sd);
 			$this->db->where('cv.call_date <=', $ed);
 			$this->db->like('cv.call_type', 'INCOMING', 'both');
     
-			// Duration filter added here for correct counting:
+			// NOTE: Agar aapko dashboard ki tarah sirf Connected/Answered incoming calls 
+			// ka count (176) hi chahiye, toh niche wali line se comment (//) hata dena:
+			// $this->db->where('cv.call_status', 'Incoming (Answered)');
+
+			// Duration filter
 			if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
 				$this->db->where('cv.duration >=', $startSecond);
 				$this->db->where('cv.duration <=', $endSecond);
