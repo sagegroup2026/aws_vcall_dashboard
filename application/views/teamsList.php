@@ -3,6 +3,8 @@
     .table .la { text-align: left !important; }
 </style>
 
+
+
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
@@ -36,7 +38,6 @@
                                                 <th style="width: 80px;">Sr. No.</th>
                                                 <th>Team Name</th>
                                                 <th>Team Head Name</th>
-                                                <th>Status</th>
                                                 <th style="width: 120px;">Action</th>
                                             </tr>
                                         </thead>
@@ -51,13 +52,6 @@
                                                 <td><?php echo htmlspecialchars($cd['tname']); ?></td>
                                                 <td><?php echo htmlspecialchars(isset($cd['team_head_name']) ? $cd['team_head_name'] : $cd['thead']); ?></td>
                                                 <td>
-                                                    <?php if(isset($cd['status']) && $cd['status'] == 1){ ?>
-                                                        <span class="badge bg-success">Active</span>
-                                                    <?php } else { ?>
-                                                        <span class="badge bg-danger">Inactive</span>
-                                                    <?php } ?>
-                                                </td>
-                                                <td>
                                                     <button type="button" class="btn btn-sm btn-soft-primary edit-btn" onclick="editTeam(<?php echo $cd['id']; ?>)">
                                                         <i class="ri-pencil-fill"></i> Edit
                                                     </button>
@@ -66,7 +60,7 @@
                                             <?php 
                                                 }
                                             } else {
-                                                echo '<tr><td colspan="5" class="text-center">No records found.</td></tr>';
+                                                echo '<tr><td colspan="4" class="text-center">No records found.</td></tr>';
                                             } 
                                             ?>
                                         </tbody>
@@ -94,7 +88,7 @@
                     <input type="hidden" name="team_id" id="team_id">
                     <div class="mb-3">
                         <label for="tname" class="form-label">Team Name</label>
-                        <input type="text" class="form-control" id="tname" name="tname" required placeholder="Enter team name">
+                        <input type="text" class="form-conrol form-control" id="tname" name="tname" required placeholder="Enter team name">
                     </div>
                     <div class="mb-3">
                         <label for="thead" class="form-label">Team Head</label>
@@ -103,13 +97,6 @@
                             <?php if(!empty($users)){ foreach($users as $usr){ ?>
                                 <option value="<?php echo $usr['id']; ?>"><?php echo $usr['name']; ?></option>
                             <?php }} ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
                         </select>
                     </div>
                 </div>
@@ -127,7 +114,6 @@
     function openAddModal() {
         $('#teamForm')[0].reset();
         $('#team_id').val('');
-        $('#status').val('1'); // Default active on add
         $('#teamModalLabel').text('Add New Team');
         $('#saveBtn').text('Save Team');
     }
@@ -143,7 +129,6 @@
                     $('#team_id').val(response.data.id);
                     $('#tname').val(response.data.tname);
                     $('#thead').val(response.data.thead);
-                    $('#status').val(response.data.status);
                     $('#teamModalLabel').text('Edit Team');
                     $('#saveBtn').text('Update Team');
                     $('#teamModal').modal('show');

@@ -1,4 +1,5 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Team_model extends CI_Model {
 
@@ -6,8 +7,7 @@ class Team_model extends CI_Model {
         $this->db->select('team.*, users.name as team_head_name');
         $this->db->from('team');
         $this->db->join('users', 'users.id = team.thead', 'left');
-        // Alphabetical sorting for teams (A to Z)
-        $this->db->order_by('team.tname', 'ASC');
+        $this->db->where('team.status', 1);
         $query = $this->db->get();
         return $query->result_array();
     }
