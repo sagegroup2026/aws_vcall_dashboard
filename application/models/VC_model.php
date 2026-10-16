@@ -14,7 +14,7 @@
             $curd = $currentDate->format('Y-m-d');
             if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
             if(!empty($ed)){$ed = $ed . ' 23:59:59.000000';}else{$ed = $curd . ' 23:59:59.000000';}
-// print_r($tid);exit();
+
             $this->db->select("
                 cv.user_name,
                 cv.sender_phone_number,
@@ -427,33 +427,40 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
         public function get_unq_calls($user, $sd, $ed, $tid, $startSecond, $endSecond){
 			$currentDate = new DateTime();
 			$curd = $currentDate->format('Y-m-d');
-			if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
-			if(!empty($ed)){$ed = $ed . ' 23:59:59.000000';}else{$ed = $curd . ' 23:59:59.000000';}
+			if(!empty($sd)){$sd = $sd . ' 00:00:00';}else{$sd = $curd . ' 00:00:00';}
+			if(!empty($ed)){$ed = $ed . ' 23:59:59';}else{$ed = $curd . ' 23:59:59';}
 
-			$this->db->select('DISTINCT(cv.receiver_phone_number)');
+			$team = $this->session->userdata("team");
+
+			$this->db->select('COUNT(DISTINCT cv.receiver_phone_number) AS total');
 			$this->db->from('highrise_app_call_logs_vcall cv');
-			$this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
-			$this->db->where('cv.application_type','VCall');
+			$this->db->join('users u', "u.name = cv.user_name", 'left'); // Dashboard wala join
+			$this->db->where('cv.application_type', 'VCall');
+
+			// Personal numbers wipeout condition
+			$this->db->where("NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)", NULL, FALSE);
+
 			if(!empty($user)){
-				$this->db->like('cv.user_name', $user, 'both');
+				$this->db->where('cv.user_name', $user);
 			}
-			if($tid > 0){
-				$this->db->where('u.team',$tid);
+			if($team > 0){
+				$this->db->where('u.team', $team);
 			}
+    
 			$this->db->where('cv.call_date >=', $sd);
 			$this->db->where('cv.call_date <=', $ed);
-    
-			// Yeh line count wale function mein bhi honi chahiye:
 			$this->db->where('cv.call_type !=', 'UNKNOWN');
-    
+
 			// Duration filter
-			if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
-				$this->db->where('cv.duration >=', $startSecond);
-				$this->db->where('cv.duration <=', $endSecond);
+			if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
+				$startSecond = (int)$startSecond;
+				$endSecond = (int)$endSecond;
+				$this->db->where("cv.duration REGEXP '^[0-9]+$' AND CAST(cv.duration AS UNSIGNED) BETWEEN $startSecond AND $endSecond", NULL, FALSE);
 			}
 
-			$qry = $this->db->get();
-			return $qry->num_rows();
+			$query = $this->db->get();
+			$result = $query->row_array();
+			return isset($result['total']) ? $result['total'] : 0;
 		}
 
         public function get_cnctd_calls($user, $sd, $ed, $tid){
@@ -783,39 +790,46 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 			return $qry->result_array();
 		}
 
-       public function get_unq_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond){
-			$currentDate = new DateTime();
-			$curd = $currentDate->format('Y-m-d');
-			if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
-			if(!empty($ed)){$ed = $ed . ' 23:59:59.000000';}else{$ed = $curd . ' 23:59:59.000000';}
+      public function get_unq_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond){
+    $currentDate = new DateTime();
+    $curd = $currentDate->format('Y-m-d');
+    if(!empty($sd)){$sd = $sd . ' 00:00:00';}else{$sd = $curd . ' 00:00:00';}
+    if(!empty($ed)){$ed = $ed . ' 23:59:59';}else{$ed = $curd . ' 23:59:59';}
 
-			$this->db->select('cv.receiver_phone_number, cv.name, cv.sender_phone_number, cv.user_name, COUNT(cv.receiver_phone_number) AS call_made');
+    $team = $this->session->userdata("team");
 
-			$this->db->from('highrise_app_call_logs_vcall cv');
-			$this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
-			$this->db->where('cv.application_type','VCall');
-			if(!empty($user)){
-				$this->db->like('cv.user_name', $user, 'both');
-			}
-			if($tid > 0){
-				$this->db->where('u.team',$tid);
-			}
-			$this->db->where('cv.call_date >=', $sd);
-			$this->db->where('cv.call_date <=', $ed);
+    $this->db->select('cv.receiver_phone_number, cv.name, cv.sender_phone_number, cv.user_name, COUNT(cv.receiver_phone_number) AS call_made');
+    $this->db->from('highrise_app_call_logs_vcall cv');
+    $this->db->join('users u', "u.name = cv.user_name", 'left'); // Dashboard wala join
+    $this->db->where('cv.application_type', 'VCall');
+
+    // Personal numbers wipeout condition
+    $this->db->where("NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)", NULL, FALSE);
+
+    if(!empty($user)){
+        $this->db->where('cv.user_name', $user);
+    }
+    if($team > 0){
+        $this->db->where('u.team', $team);
+    }
     
-			// Yeh line add karni hai taaki UNKNOWN calls exclude ho jayein:
-			$this->db->where('cv.call_type !=', 'UNKNOWN');
-    
-			// Duration filter
-			if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
-				$this->db->where('cv.duration >=', $startSecond);
-				$this->db->where('cv.duration <=', $endSecond);
-			}
+    $this->db->where('cv.call_date >=', $sd);
+    $this->db->where('cv.call_date <=', $ed);
+    $this->db->where('cv.call_type !=', 'UNKNOWN');
 
-			$this->db->group_by('cv.receiver_phone_number');
-			$query = $this->db->get();
-			return $query->result_array();
-		}
+    // Duration filter
+    if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
+        $startSecond = (int)$startSecond;
+        $endSecond = (int)$endSecond;
+        $this->db->where("cv.duration REGEXP '^[0-9]+$' AND CAST(cv.duration AS UNSIGNED) BETWEEN $startSecond AND $endSecond", NULL, FALSE);
+    }
+
+    $this->db->group_by('cv.receiver_phone_number');
+    $this->db->order_by('cv.id', 'desc');
+    
+    $query = $this->db->get();
+    return $query->result_array();
+}
 
         public function get_cnctd_calls_details($user, $sd, $ed, $tid){
             $currentDate = new DateTime();
