@@ -186,6 +186,8 @@ class VCall extends CI_Controller {
         $user = htmlspecialchars($_GET['agent']);
         $sd = date('Y-m-d', strtotime(htmlspecialchars($_GET['sd'])));
         $ed = date('Y-m-d', strtotime(htmlspecialchars($_GET['ed'])));
+		$startSecond = htmlspecialchars($_GET['ss']);
+		$endSecond = htmlspecialchars($_GET['es']);
         $data['agt'] = $this->VC_model->agent($tid);  
 
         // SEO Variables
@@ -193,8 +195,8 @@ class VCall extends CI_Controller {
         $data['description'] = $url . ' | VCall - Admin & Dashboard';
 
         // Database Variables
-        $data['in_details'] = $this->VC_model->get_in_calls_details($user, $sd, $ed, $tid);
-        $data['in_calls'] = $this->VC_model->get_in_calls($user, $sd, $ed, $tid);
+        $data['in_details'] = $this->VC_model->get_in_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond);
+        $data['in_calls'] = $this->VC_model->get_in_calls($user, $sd, $ed, $tid, $startSecond, $endSecond);
         // $data['agt'] = $this->VC_model->agent();
 
 		$this->load->view('common/head', $data);
