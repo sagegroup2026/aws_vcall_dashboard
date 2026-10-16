@@ -424,7 +424,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 			return $qry->num_rows();
 		}
 
-        public function get_unq_calls($user, $sd, $ed, $tid){
+        public function get_unq_calls($user, $sd, $ed, $tid, $startSecond, $endSecond){
             $currentDate = new DateTime();
             $curd = $currentDate->format('Y-m-d');
             if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
@@ -443,6 +443,13 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
             $this->db->where('cv.call_date >=', $sd);
             $this->db->where('cv.call_date <=', $ed);
             $this->db->where('cv.call_type !=', 'UNKNOWN');
+
+			// Duration filter added here:
+				if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
+					$this->db->where('cv.duration >=', $startSecond);
+					$this->db->where('cv.duration <=', $endSecond);
+				}
+
             $qry = $this->db->get();
             return $qry->num_rows();
         }
