@@ -1,5 +1,6 @@
 <style>
     .table th, .table td { text-align: center; vertical-align: middle; }
+    .dt-buttons { margin-bottom: 10px; }
 </style>
 
 <div class="main-content">
@@ -8,7 +9,7 @@
             <!-- Page Title -->
             <div class="row">
                 <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between mb-3">
                         <h4 class="mb-sm-0">Team Members List</h4>
                         <div class="page-title-right">
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#memberModal" onclick="openAddModal()">
@@ -28,7 +29,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped align-middle mb-0">
+                                <table id="memberTable" class="table table-striped align-middle mb-0">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>Sr. No.</th>
@@ -197,8 +198,20 @@
     </div>
 </div>
 
-<!-- AJAX & SweetAlert2 Script -->
+<!-- AJAX, SweetAlert2 & DataTables Script -->
 <script>
+    $(document).ready(function() {
+        // Initialize DataTable for Search & Export
+        $('#memberTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'csv', 'pdf', 'print'
+            ],
+            pageLength: 10,
+            ordering: true
+        });
+    });
+
     function openAddModal() {
         $('#memberForm')[0].reset();
         $('#member_id').val('');
@@ -226,6 +239,8 @@
                     $('#designation').val(response.data.designation);
                     $('#team').val(response.data.team);
                     $('#user_role').val(response.data.user_role);
+                    
+                    // Fixed Status ID binding issue here:
                     $('#member_status').val(response.data.status);
                     
                     $('#memberModalLabel').text('Edit Member');
