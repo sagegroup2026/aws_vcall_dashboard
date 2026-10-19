@@ -706,7 +706,10 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 				$this->db->from('highrise_app_call_logs_vcall cv');
 				$this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
 				$this->db->where('cv.application_type','VCall');
-    
+              
+				// Personal numbers wipeout condition (agar baki functions mein hai)
+		        $this->db->where("NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)", NULL, FALSE);
+				 
 				if(!empty($user)){
 					$this->db->like('cv.user_name', $user, 'both');
 				}
@@ -718,10 +721,11 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 				$this->db->where('cv.call_date <=', $ed);
 				$this->db->where('cv.call_type !=', 'UNKNOWN');
 
-				// Duration ke beech ka data filter karne ke liye condition:
-				if ($startSecond !== '' && $endSecond !== '' && $startSecond !== null && $endSecond !== null) {
-					$this->db->where('cv.duration >=', $startSecond);
-					$this->db->where('cv.duration <=', $endSecond);
+				// Robust Duration Filter
+				if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
+					$startSecond = (int)$startSecond;
+					$endSecond = (int)$endSecond;
+					$this->db->where("cv.duration REGEXP '^[0-9]+$' AND CAST(cv.duration AS UNSIGNED) BETWEEN $startSecond AND $endSecond", NULL, FALSE);
 				}
 
 				$this->db->order_by('cv.id', 'desc');
