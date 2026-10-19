@@ -226,7 +226,7 @@
                     $('#designation').val(response.data.designation);
                     $('#team').val(response.data.team);
                     $('#user_role').val(response.data.user_role);
-                    $('#status').val(response.data.status);
+                    $('#member_status').val(response.data.status);
                     
                     $('#memberModalLabel').text('Edit Member');
                     $('#saveBtn').text('Update Member');
