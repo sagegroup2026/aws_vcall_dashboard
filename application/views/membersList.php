@@ -1,6 +1,5 @@
 <style>
     .table th, .table td { text-align: center; vertical-align: middle; }
-    .dt-buttons { margin-bottom: 10px; }
 </style>
 
 <div class="main-content">
@@ -17,6 +16,13 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Search Box (Bina CDN ke live search ke liye) -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text" id="tableSearch" class="form-control" placeholder="Search members...">
                 </div>
             </div>
 
@@ -198,17 +204,15 @@
     </div>
 </div>
 
-<!-- AJAX, SweetAlert2 & DataTables Script -->
+<!-- Script: Live Search, Edit Modal & AJAX Form Submit -->
 <script>
     $(document).ready(function() {
-        // Initialize DataTable for Search & Export
-        $('#memberTable').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'excel', 'csv', 'pdf', 'print'
-            ],
-            pageLength: 10,
-            ordering: true
+        // Live Search without CDN
+        $("#tableSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#memberTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
         });
     });
 
@@ -240,7 +244,7 @@
                     $('#team').val(response.data.team);
                     $('#user_role').val(response.data.user_role);
                     
-                    // Fixed Status ID binding issue here:
+                    // Fixed Status ID binding issue here
                     $('#member_status').val(response.data.status);
                     
                     $('#memberModalLabel').text('Edit Member');
