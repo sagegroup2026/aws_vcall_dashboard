@@ -431,7 +431,7 @@ public function total_call_optimised($sd, $ed, $agent = null)
     $this->db->from('highrise_app_call_logs_vcall');
     
     // Users table ko join kiya hai
-    $this->db->join('users', 'users.name = highrise_app_call_logs_vcall.user_name', 'left');
+    $this->db->join('users', 'users.username = highrise_app_call_logs_vcall.user_name', 'left');
 
     $this->db->where('application_type', 'VCall');
     $this->db->where('call_date >=', $sd);
