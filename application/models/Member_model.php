@@ -19,7 +19,18 @@ class Member_model extends CI_Model {
             return 'exists';
         } else {
             $this->db->insert('users', $data);
-            return $this->db->affected_rows() > 0 ? 'success' : 'error';
+            if ($this->db->affected_rows() > 0) {
+                $insert_id = $this->db->insert_id();
+                
+                // Agar designation DGM hai aur Team assigned hai, toh team table me thead update kar do
+                if (isset($data['designation']) && $data['designation'] === 'DGM' && !empty($data['team']) && $data['team'] != 0) {
+                    $this->db->where('id', $data['team']);
+                    $this->db->update('team', ['thead' => $insert_id]);
+                }
+
+                return 'success';
+            }
+            return 'error';
         }
     }
 
@@ -33,6 +44,13 @@ class Member_model extends CI_Model {
         } else {
             $this->db->where('id', $id);
             $this->db->update('users', $data);
+
+            // Agar designation DGM hai aur Team assigned hai, toh team table me thead update kar do
+            if (isset($data['designation']) && $data['designation'] === 'DGM' && !empty($data['team']) && $data['team'] != 0) {
+                $this->db->where('id', $data['team']);
+                $this->db->update('team', ['thead' => $id]);
+            }
+
             return 'success';
         }
     }
