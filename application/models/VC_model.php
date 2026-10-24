@@ -1081,49 +1081,30 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
             $ed = !empty($ed) ? $ed : $currentDate;
 
  
-            $this->db2->select("
-        user_name,
+            $this->db2->select("user_name,
 
-        SUM(CASE WHEN type = 'Receipt Preparation' 
-            THEN total_entries ELSE 0 END) AS reciept_preparation,
+        SUM(CASE WHEN type = 'Receipt Preparation'  THEN total_entries ELSE 0 END) AS reciept_preparation,
 
-        SUM(CASE WHEN type = 'Demand' 
-            THEN total_entries ELSE 0 END) AS demand,
+        SUM(CASE WHEN type = 'Demand'  THEN total_entries ELSE 0 END) AS demand,
 
-        SUM(CASE WHEN type = 'File Approval' 
-            THEN total_entries ELSE 0 END) AS file_approval,
+        SUM(CASE WHEN type = 'File Approval' THEN total_entries ELSE 0 END) AS file_approval,
 
-        SUM(CASE WHEN type = 'Possession Certificate' 
-            THEN total_entries ELSE 0 END) AS possession_certificate,
+        SUM(CASE WHEN type = 'Possession Certificate'  THEN total_entries ELSE 0 END) AS possession_certificate,
 
-        SUM(CASE WHEN type = 'Customer Office Visit' 
-            THEN total_entries ELSE 0 END) AS customer_office_visit,
+        SUM(CASE WHEN type = 'Customer Office Visit' THEN total_entries ELSE 0 END) AS customer_office_visit,
         
-        SUM(CASE WHEN type = 'Meeting With Senior' 
-            THEN total_entries ELSE 0 END) AS meeting_with_senior,
+        SUM(CASE WHEN type = 'Meeting With Senior'  THEN total_entries ELSE 0 END) AS meeting_with_senior,
 
-        SUM(CASE WHEN type = 'Registry Preparation' 
-            THEN total_entries ELSE 0 END) AS registry_preparation,
+        SUM(CASE WHEN type = 'Registry Preparation' THEN total_entries ELSE 0 END) AS registry_preparation,
 
-        SUM(CASE WHEN type = 'Customer Grievance/Discussion' 
-            THEN total_entries ELSE 0 END) AS customer_grievance_discussion,
+        SUM(CASE WHEN type = 'Customer Grievance/Discussion'  THEN total_entries ELSE 0 END) AS customer_grievance_discussion,
 
-        SUM(CASE WHEN type = 'Documentation - All Type of Documentation' 
-            THEN total_entries ELSE 0 END) AS documentation_all_type_of_documentation,
+        SUM(CASE WHEN type = 'Documentation - All Type of Documentation'  THEN total_entries ELSE 0 END) AS documentation_all_type_of_documentation,
         
-        SUM(CASE WHEN type = 'File Approval' 
-            THEN total_entries ELSE 0 END) AS file_approval,
-
-        SUM(CASE WHEN type = 'Registry Authorisation Physical' 
-            THEN total_entries ELSE 0 END) AS  registry_authorisation_physical,
+        SUM(CASE WHEN type = 'Registry Authorisation Physical' THEN total_entries ELSE 0 END) AS  registry_authorisation_physical,
         
-         SUM(CASE WHEN type = 'Major/Minor Payment Discussion' 
-            THEN total_entries ELSE 0 END) AS  major_minor_payment_discussion,        
-        SUM(CASE WHEN type = 'Booking File Complete - Verification' 
-            THEN total_entries ELSE 0 END) AS  booking_file_complete_verification  
-             
-
-    ");
+         SUM(CASE WHEN type = 'Major/Minor Payment Discussion'  THEN total_entries ELSE 0 END) AS  major_minor_payment_discussion,        
+        SUM(CASE WHEN type = 'Booking File Complete - Verification' THEN total_entries ELSE 0 END) AS  booking_file_complete_verification  ");
 
     $this->db2->from('highrise_app_back_office_productivity_table');
 
@@ -1272,6 +1253,11 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
 
             return $query->result();
         }
+
+
+
+
+
 
 // End
     }
