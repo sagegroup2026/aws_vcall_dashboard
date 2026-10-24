@@ -314,7 +314,7 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
                 SUM(CASE WHEN LOWER(cv.call_type) = 'incoming' AND cv.duration REGEXP '^[0-9]+$' AND cv.duration > 0 THEN CAST(cv.duration AS UNSIGNED) ELSE 0 END) AS total_incoming_call_duration,            
                 1 AS is_total        
             FROM highrise_app_call_logs_vcall cv        
-            LEFT JOIN users u ON u.name = cv.user_name        
+            LEFT JOIN users u ON u.user_name = cv.user_name        
             $where_sql    ";
 
     $query = $this->db->query($sql);
