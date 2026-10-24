@@ -697,41 +697,47 @@ public function dashboard_data($user, $from_date, $to_date, $team, $startSecond,
         }
 
         public function get_all_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond){
-				$currentDate = new DateTime();
-				$curd = $currentDate->format('Y-m-d');
-				if(!empty($sd)){$sd = $sd . ' 00:00:00.000000';}else{$sd = $curd . ' 00:00:00.000000';}
-				if(!empty($ed)){$ed = $ed . ' 23:59:59.000000';}else{$ed = $curd . ' 23:59:59.000000';}
-
-				$this->db->select('*, cv.name as cnm');
-				$this->db->from('highrise_app_call_logs_vcall cv');
-				$this->db->join('users u', "RIGHT(cv.sender_phone_number, 10) = RIGHT(u.mobile, 10)", 'inner');
-				$this->db->where('cv.application_type','VCall');
-              
-				// Personal numbers wipeout condition (agar baki functions mein hai)
-		        $this->db->where("NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)", NULL, FALSE);
-				 
-				if(!empty($user)){
-					$this->db->like('cv.user_name', $user, 'both');
-				}
-				if($tid > 0){
-					$this->db->where('u.team', $tid);
-				}
+    $currentDate = new DateTime();
+    $curd = $currentDate->format('Y-m-d');
     
-				$this->db->where('cv.call_date >=', $sd);
-				$this->db->where('cv.call_date <=', $ed);
-				$this->db->where('cv.call_type !=', 'UNKNOWN');
+    // Removed microseconds to match standard database datetime formats
+    if(!empty($sd)){$sd = $sd . ' 00:00:00';}else{$sd = $curd . ' 00:00:00';}
+    if(!empty($ed)){$ed = $ed . ' 23:59:59';}else{$ed = $curd . ' 23:59:59';}
 
-				// Robust Duration Filter
-				if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
-					$startSecond = (int)$startSecond;
-					$endSecond = (int)$endSecond;
-					$this->db->where("cv.duration REGEXP '^[0-9]+$' AND CAST(cv.duration AS UNSIGNED) BETWEEN $startSecond AND $endSecond", NULL, FALSE);
-				}
+    $this->db->select('cv.*, u.name as cnm');
+    $this->db->from('highrise_app_call_logs_vcall cv');
+    
+    // FIXED: Changed to LEFT JOIN matching the dashboard query structure
+    $this->db->join('users u', 'u.name = cv.user_name', 'left');
+    
+    $this->db->where('cv.application_type', 'VCall');
+          
+    // Personal numbers wipeout condition
+    $this->db->where("NOT EXISTS (SELECT 1 FROM presonalNumberWipeOut WHERE status = 1 AND number = cv.receiver_phone_number)", NULL, FALSE);
+             
+    if(!empty($user)){
+        // FIXED: Changed from LIKE to exact match to match dashboard behavior
+        $this->db->where('cv.user_name', $user);
+    }
+    if($tid > 0){
+        $this->db->where('u.team', $tid);
+    }
 
-				$this->db->order_by('cv.id', 'desc');
-				$qry = $this->db->get(); //echo $this->db->last_query();exit;
-				return $qry->result_array();
-			}
+    $this->db->where('cv.call_date >=', $sd);
+    $this->db->where('cv.call_date <=', $ed);
+    $this->db->where('cv.call_type !=', 'UNKNOWN');
+
+    // Robust Duration Filter
+    if (($startSecond !== '' && $startSecond !== null) && ($endSecond !== '' && $endSecond !== null)) {
+        $startSecond = (int)$startSecond;
+        $endSecond = (int)$endSecond;
+        $this->db->where("cv.duration REGEXP '^[0-9]+$' AND CAST(cv.duration AS UNSIGNED) BETWEEN $startSecond AND $endSecond", NULL, FALSE);
+    }
+
+    $this->db->order_by('cv.id', 'desc');
+    $qry = $this->db->get();
+    return $qry->result_array();
+}
 
        public function get_out_calls_details($user, $sd, $ed, $tid, $startSecond, $endSecond){
 				$currentDate = new DateTime();
